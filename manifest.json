@@ -1,21 +1,23 @@
 {
-    "manifest_version" :3,
-    "name" : "SnackStats",
-    "description" : "Give stats about the amount of money you have spent on food delivery apps. ",
-    "version":"1.0",
-    "permissions": [
-        "activeTab",
-        "scripting",
-        "tabs"
-    ],
-        
-      "action" : {
-        "default_popup" : "popup/popup.html"
-        
-    },
-    "background": {
-        "service_worker": "background.js"
-      }
-
-
+  "manifest_version": 3,
+  "name": "SnackStats",
+  "description": "Give stats about the amount of money you have spent on food delivery apps.",
+  "version": "1.0",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.ubereats.com/*"],
+      "js": ["scripts/content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html"
+  }
 }
