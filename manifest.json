@@ -6,7 +6,11 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "tabs"
+    "tabs"  
+    
+  ],
+  "host_permissions": [
+    "*://*.ubereats.com/*"
   ],
   "background": {
     "service_worker": "background.js"
