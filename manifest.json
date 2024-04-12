@@ -3,13 +3,19 @@
     "name" : "SnackStats",
     "description" : "Give stats about the amount of money you have spent on food delivery apps. ",
     "version":"1.0",
-    "action" : {
-        "default_popup" : "popup.html"
-    },
     "permissions": [
         "activeTab",
-        "scripting"
-    ]
+        "scripting",
+        "tabs"
+    ],
+        
+      "action" : {
+        "default_popup" : "popup/popup.html"
+        
+    },
+    "background": {
+        "service_worker": "background.js"
+      }
 
 
 }
