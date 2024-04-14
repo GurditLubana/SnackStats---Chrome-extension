@@ -25,6 +25,21 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         });
       });
     }
+    else if(message.action=== "skip"){
+
+      console.log("Clicked on Skip");
+  
+      chrome.tabs.create({ url: "https://www.skipthedishes.com/user/account/orders" }, function (newTab) {
+        setTimeout(() => {
+          chrome.scripting.executeScript(
+            {
+              target: { tabId: newTab.id },
+              files: ["scripts/skipScripts.js"],
+            }
+          );
+        }, 2000); 
+      });
+    }
     sendResponse({ acknowledged: "Button click acknowledged." });
   });
   

@@ -5,3 +5,7 @@ document.getElementById('clickme').addEventListener('click', function() {
     });
   });
   
+
+  document.getElementById('skip').addEventListener('click', function() {
+    chrome.runtime.sendMessage({action : 'skip'});
+  });
