@@ -18,7 +18,7 @@
   "content_scripts": [
     {
       "matches": ["*://*.ubereats.com/*"],
-      "js": ["scripts/content.js"]
+      "js": ["scripts/uberScripts.js"]
     },
     {
       "matches": ["*://*.skipthedishes.com/*"],
