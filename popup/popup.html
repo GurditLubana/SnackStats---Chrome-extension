@@ -5,13 +5,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SnackStats</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        html {
+            width: 350px;
+        }
+
+        body {
+            font-family: 'L sans-serif';
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            width: 350px;
+        }
+
+        header,
+        footer {
+            background-color: #0c1c741f;
+            color: #333;
+            padding: 10px 20px;
+            text-align: center;
+            border-bottom: 2px solid #e1e1e1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            height: 118px;
+        }
+
+        footer {
+            border-top: 2px solid #e1e1e1;
+            border-bottom: none;
+            margin-top: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            padding: 12px;
+            font-weight: 1000;
+        }
+
+        button {
+            width: 250px;
+            color: white;
+            padding: 14px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #uber {
+            background-color: rgb(14, 131, 69);
+        }
+
+        #skip {
+            background-color: #F36805;
+        }
+
+        #doordash {
+            background-color: rgb(217, 20, 0);
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+        main{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-left: 50px;
+            width: 350px;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>SnackStats</h1>
-    <button id="clickme">View Report for Uber Eats</button>
-    <button id="skip">View Report for Skip the Dishes</button>
-    <button id="doordash">View Report for Doordash</button>
+    <header>
+        <img src="../Images/logo2.png" alt="Company Logo" style="height: 75px;">
+        <h1>SnackStats</h1>
+    </header>
+    <main>
+        <button id="uber">View Report for Uber Eats</button>
+        <button id="skip">View Report for Skip the Dishes</button>
+        <button id="doordash">View Report for Doordash</button>
+    </main>
+    <footer>
+        © 2024 SnackStats Corporation
+    </footer>
     <script src="popup.js"></script>
 </body>
 

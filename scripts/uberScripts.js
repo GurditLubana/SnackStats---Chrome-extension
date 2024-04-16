@@ -22,7 +22,6 @@ async function expandAllListItems() {
         var restaurantName = orderInfo.children[0].children[0].innerHTML.trim();
         var amount = (orderInfo.children[1].children[0].firstChild.textContent).split("$")[1];
 
-        // console.log(restaurantName, amount);
         amount = amount? parseFloat(amount.trim()): 0.00;
         
         if(!(restaurantName in orderListJson)){
