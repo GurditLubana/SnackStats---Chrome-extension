@@ -53,13 +53,7 @@ async function expandAllListItems() {
           else if(totalAmount === orderListJson['mostAmountSpent']['amountSpent']){
             (orderListJson['mostAmountSpent']['restaurant']).push(restaurantName);
           }
-          
-
-
-
         }
-
-       
       }
     }
     console.log(orderListJson);

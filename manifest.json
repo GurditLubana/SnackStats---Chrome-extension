@@ -10,7 +10,7 @@
     
   ],
   "host_permissions": [
-    "*://*.ubereats.com/*", "*://*.skipthedishes.com/*"
+    "*://*.ubereats.com/*", "*://*.skipthedishes.com/*", "*://*.doordash.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -23,6 +23,10 @@
     {
       "matches": ["*://*.skipthedishes.com/*"],
       "js": ["scripts/skipScripts.js"]
+    },
+    {
+      "matches": ["*://*.doordash.com/*"],
+      "js": ["scripts/doordashScript.js"]
     }
   ],
   "action": {

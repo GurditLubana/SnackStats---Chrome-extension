@@ -7,3 +7,7 @@ document.getElementById('uber').addEventListener('click', function() {
   document.getElementById('skip').addEventListener('click', function() {
     chrome.runtime.sendMessage({action : 'skip'});
   });
+
+  document.getElementById('doordash').addEventListener('click', function() {
+    chrome.runtime.sendMessage({action : 'doordash'});
+  });
