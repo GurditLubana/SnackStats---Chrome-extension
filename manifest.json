@@ -29,6 +29,12 @@
       "js": ["scripts/doordashScript.js"]
     }
   ],
+  "icons": {
+    "16": "Images/logo16.png",
+    "32": "Images/logo32.png",
+    "48": "Images/logo48.png",
+    "128": "Images/logo128.png"
+  },
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon" : "Images/logo2.png"

@@ -9,85 +9,84 @@ if (document.readyState === "complete") {
 }
 
 async function calculateExpenditure() {
-  await expandOrdersList();
-
-  fetchOrdersData();
+  try {
+    await expandOrdersList();
+    const orderListJson = fetchOrdersData();
+    console.log(orderListJson);
+  } catch (error) {
+    console.error("Error calculating expenditure:", error);
+  }
 }
 
 async function expandOrdersList() {
-  var loadmoreBtn = document.querySelector(".iMIGfw");
-
-  while (loadmoreBtn) {
-    console.log("Clicking on load more btn.");
-    loadmoreBtn.click();
+  while (document.querySelector(".iMIGfw")) {
+    console.log("Clicking on 'load more' button.");
+    document.querySelector(".iMIGfw").click();
     await new Promise((resolve) => setTimeout(resolve, 1500));
-    loadmoreBtn = document.querySelector(".iMIGfw");
   }
-  console.log("Finished expanding ");
+  console.log("Finished expanding the orders list.");
 }
 
-
 function fetchOrdersData() {
-
-  var mainContent = document.querySelector(
+  const mainContent = document.querySelector(
     '.StackChildren__StyledStackChildren-sc-1tveqpz-0[data-testid="OrdersV2"]'
   );
-  var ordersList = mainContent.querySelector(
+  if (!mainContent) {
+    throw new Error("Main content not found.");
+  }
+
+  const ordersList = mainContent.querySelector(
     ".StackChildren__StyledStackChildren-sc-1tveqpz-0"
   );
-//   console.log(ordersList);
-
-  let orderListJson = {
+  const orderListJson = {
     totalAmountSpent: 0,
     mostAmountSpent: { restaurant: [], amountSpent: 0 },
   };
+
   ordersList.childNodes.forEach((node) => {
     if (node.nodeType === Node.ELEMENT_NODE) {
-
-      var restaurantName = node.querySelector(
-        ".Text-sc-16fu6d-0.sc-7ff7002-1.NCYFa"
-      );
-      restaurantName = restaurantName
-        ? restaurantName.textContent
-        : "No restaurant name found";
-
-      var amount = node.querySelector(".Text-sc-16fu6d-0.eHhTon");
-      amount = amount ? parseFloat(amount.textContent.split(" • ")[1].split("$")[1]) : 0.0;
-     
-      insertData(restaurantName, orderListJson, amount);
+      const restaurantName =
+        node
+          .querySelector(".Text-sc-16fu6d-0.sc-7ff7002-1.NCYFa")
+          ?.textContent.trim() || "No restaurant name found";
+      const amountText = node
+        .querySelector(".Text-sc-16fu6d-0.eHhTon")
+        ?.textContent.split(" • ")[1]
+        .split("$")[1];
+      const amount = parseFloat(amountText) || 0.0;
+      if (restaurantName !== "No restaurant name found") {
+        updateOrderListJson(orderListJson, restaurantName, amount);
+      }
     }
   });
-  console.log(orderListJson);
+
+  return orderListJson;
 }
 
-
-
-function insertData(restaurantName, orderListJson, amount) {
-  if (!(restaurantName in orderListJson)) {
-    orderListJson[restaurantName] = [1, amount];
-    orderListJson["totalAmountSpent"] += amount;
-
-    if (amount > orderListJson["mostAmountSpent"]["amountSpent"]) {
-      orderListJson["mostAmountSpent"]["amountSpent"] = amount;
-      orderListJson["mostAmountSpent"]["restaurant"] = [];
-      orderListJson["mostAmountSpent"]["restaurant"].push(restaurantName);
-    } else if (amount === orderListJson["mostAmountSpent"]["amountSpent"]) {
-      orderListJson["mostAmountSpent"]["restaurant"].push(restaurantName);
-    }
+function updateOrderListJson(orderListJson, restaurantName, amount) {
+  if (!orderListJson[restaurantName]) {
+    orderListJson[restaurantName] = { visits: 1, totalSpent: amount };
   } else {
-    var numVisited = orderListJson[restaurantName][0] + 1;
-    var totalAmount = orderListJson[restaurantName][1] + amount;
-    orderListJson[restaurantName] = [numVisited, totalAmount];
-    orderListJson["totalAmountSpent"] += amount;
+    orderListJson[restaurantName].visits++;
+    orderListJson[restaurantName].totalSpent += amount;
+  }
 
-    if (totalAmount > orderListJson["mostAmountSpent"]["amountSpent"]) {
-      orderListJson["mostAmountSpent"]["amountSpent"] = totalAmount;
-      orderListJson["mostAmountSpent"]["restaurant"] = [];
-      orderListJson["mostAmountSpent"]["restaurant"].push(restaurantName);
-    } else if (
-      totalAmount === orderListJson["mostAmountSpent"]["amountSpent"]
-    ) {
-      orderListJson["mostAmountSpent"]["restaurant"].push(restaurantName);
+  orderListJson.totalAmountSpent += amount;
+  updateMostSpent(
+    orderListJson,
+    restaurantName,
+    orderListJson[restaurantName].totalSpent
+  );
+}
+
+function updateMostSpent(orderListJson, restaurantName, totalSpent) {
+  const mostSpent = orderListJson.mostAmountSpent;
+  if (totalSpent > mostSpent.amountSpent) {
+    mostSpent.amountSpent = totalSpent;
+    mostSpent.restaurant = [restaurantName];
+  } else if (totalSpent === mostSpent.amountSpent) {
+    if (!mostSpent.restaurant.includes(restaurantName)) {
+      mostSpent.restaurant.push(restaurantName);
     }
   }
 }
