@@ -1,70 +1,98 @@
-async function expandAllListItems() {
-    let orderList = document.getElementById("main-content");
-    if (!orderList) {
-      console.log("No id found.");
-      return;
-    }
-  
-    let expandListBtn = (orderList.firstChild).lastChild; 
-    while (expandListBtn && expandListBtn.nodeName === "BUTTON") {
-      expandListBtn.click();
-      await new Promise(resolve => setTimeout(resolve, 2500)); 
-      expandListBtn = (orderList.firstChild).lastChild; 
-    }
-    console.log("\n\nFinished expanding all items.");
-    const pastOrdersList = orderList.firstChild;
-    let orderListJson = {'totalAmountSpent':0, 'mostAmountSpent': {'restaurant':[], 'amountSpent':0}}
 
-    for (var i in pastOrdersList.childNodes){
-      if ((pastOrdersList.childNodes[i]).className === "al"){
-        
-        var orderInfo = (pastOrdersList.childNodes[i]).children[2].children[0].children[0].children[0];
-        var restaurantName = orderInfo.children[0].children[0].innerHTML.trim();
-        var amount = (orderInfo.children[1].children[0].firstChild.textContent).split("$")[1];
+if (document.readyState === "complete") {
+  calculateExpenditure();
+} else {
+  window.addEventListener("load", calculateExpenditure);
+}
 
-        amount = amount? parseFloat(amount.trim()): 0.00;
-        
-        if(!(restaurantName in orderListJson)){
 
-          orderListJson[restaurantName] = [1, amount];
-          orderListJson['totalAmountSpent']+= amount;
 
-          if(amount > orderListJson['mostAmountSpent']['amountSpent']){
-            orderListJson['mostAmountSpent']['amountSpent'] = amount;
-            orderListJson['mostAmountSpent']['restaurant'] = [];
-            (orderListJson['mostAmountSpent']['restaurant']).push(restaurantName);
-          }
-          else if(amount === orderListJson['mostAmountSpent']['amountSpent']){
-            (orderListJson['mostAmountSpent']['restaurant']).push(restaurantName);
-          }
-          
-        }
-        else{
-          var numVisited = (orderListJson[restaurantName])[0] + 1;
-          var totalAmount = (orderListJson[restaurantName])[1] + amount;
-          orderListJson[restaurantName] = [numVisited, totalAmount]
-          orderListJson['totalAmountSpent']+= amount;
 
-          if(totalAmount > orderListJson['mostAmountSpent']['amountSpent']){
-            orderListJson['mostAmountSpent']['amountSpent'] = totalAmount;
-            orderListJson['mostAmountSpent']['restaurant'] = [];
-            (orderListJson['mostAmountSpent']['restaurant']).push(restaurantName);
-          }
-          else if(totalAmount === orderListJson['mostAmountSpent']['amountSpent']){
-            (orderListJson['mostAmountSpent']['restaurant']).push(restaurantName);
-          }
-        }
+
+async function calculateExpenditure() {
+  const mainContent = document.getElementById("main-content");
+  if (mainContent) {
+    const orderList = mainContent.firstChild;
+    await expandOrderList(orderList);
+
+    const orderListJson = {
+      totalAmountSpent: 0,
+      mostAmountSpent: { restaurant: [], amountSpent: 0 },
+    };
+
+    orderList.childNodes.forEach((node) => {
+      console.log("inside of loop");
+
+      if (node.className === "al") {
+        processDataNode(node, orderListJson);
       }
-    }
+    });
     console.log(orderListJson);
   }
-  
+}
 
-  if (document.readyState === 'complete') {
-    expandAllListItems();
-  } 
-  else {
-    window.addEventListener('load', expandAllListItems);
+
+
+
+async function expandOrderList(orderList) {
+  let expandListBtn = orderList.lastChild;
+  while (expandListBtn && expandListBtn.nodeName === "BUTTON") {
+    expandListBtn.click();
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+    expandListBtn = orderList.lastChild;
   }
-  
-  
+  console.log("Finished expanding all items.");
+}
+
+
+
+
+function processDataNode(node, orderListJson) {
+  const orderInfo = node.children[2].children[0].children[0].children[0];
+  const restaurantName = orderInfo.children[0].children[0].textContent.trim();
+  const amountString = orderInfo.children[1].children[0].firstChild.textContent;
+  let amount = amountString.split("$")[1]
+    ? parseFloat(amountString.split("$")[1].trim())
+    : 0.0;
+
+  console.log(restaurantName, amount);
+
+  updateOrderStats(restaurantName, amount, orderListJson);
+}
+
+
+
+
+
+function updateOrderStats(restaurantName, amount, orderListJson) {
+  if (!orderListJson[restaurantName]) {
+    orderListJson[restaurantName] = { visits: 1, totalSpent: amount };
+  } else {
+    orderListJson[restaurantName].visits++;
+    orderListJson[restaurantName].totalSpent += amount;
+  }
+
+  orderListJson.totalAmountSpent += amount;
+
+  updateMostSpent(restaurantName, amount, orderListJson);
+}
+
+
+
+
+function updateMostSpent(restaurantName, amount, orderListJson) {
+  const mostSpent = orderListJson.mostAmountSpent;
+  const totalAmount = orderListJson[restaurantName].totalSpent;
+
+  if (totalAmount > mostSpent.amountSpent) {
+    mostSpent.amountSpent = totalAmount;
+    mostSpent.restaurant = [restaurantName];
+  } else if (
+    totalAmount === mostSpent.amountSpent &&
+    !mostSpent.restaurant.includes(restaurantName)
+  ) {
+    mostSpent.restaurant.push(restaurantName);
+  }
+}
+
+
