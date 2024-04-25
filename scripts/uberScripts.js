@@ -1,8 +1,11 @@
 if (document.readyState === "complete") {
+  console.log('Ready to Fetch the data.')
   calculateExpenditure();
 }
 else {
-  window.addEventListener("load", calculateExpenditure);
+  window.addEventListener("load", ()=>{
+    console.log('UberEats not yet loaded completely.')
+  });
 }
 
 
@@ -116,7 +119,7 @@ async function calculateExpenditure() {
       processDataNode(node, orderListJson);
       }
     });
-    
+
     chrome.runtime.sendMessage({action : 'dataFetched', orderHistoryStat: orderListJson});
     console.log(orderListJson);
   }
