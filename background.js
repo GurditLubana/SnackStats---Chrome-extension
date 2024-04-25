@@ -49,7 +49,36 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
     else if(message.action === 'dataFetched'){
       
-        console.log(message.orderHistoryStat);
+        const orderHistoryStat = message.orderHistoryStat;
+        console.log(orderHistoryStat);
+        const statsDisplayScreen = "http://localhost:3000/";
+  
+    chrome.tabs.query({ url: statsDisplayScreen + '*' }, function (tabs) {
+      if (tabs.length > 0) {
+
+        let existingTab = tabs[0];
+        chrome.tabs.update(existingTab.id, { active: true }); 
+      } else {
+
+        chrome.tabs.create({ url: statsDisplayScreen }, function (newTab) {
+          setTimeout(() => {
+            // chrome.scripting.executeScript(
+            //   {
+            //     target: { tabId: newTab.id },
+            //     files: ["snackStatScript.js"],
+            //   },
+            //   () => {
+            //     chrome.tabs.sendMessage(newTab.id, {
+            //       action: "fetchedData",
+            //       fullScrnshot: orderHistoryStat,
+            //     });
+            //   }
+            // );
+          }, 1000);
+        });
+      }
+    });
+
     }
     sendResponse({ acknowledged: "Button click acknowledged." });
   });

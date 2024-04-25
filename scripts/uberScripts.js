@@ -148,7 +148,7 @@ function processDataNode(node, orderListJson) {
       : 0.0;
     const date = monthString.split("at")[0];
     const month = date.slice(-7, -4);
-    console.log(restaurantName, amount, month);
+    //console.log(restaurantName, amount, month);
 
     updateOrderStats(restaurantName, amount, month, orderListJson);
   } catch (error) {
