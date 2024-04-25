@@ -1,8 +1,10 @@
 if (document.readyState === "complete") {
   calculateExpenditure();
-} else {
+}
+else {
   window.addEventListener("load", calculateExpenditure);
 }
+
 
 async function calculateExpenditure() {
   const mainContent = document.getElementById("main-content");
@@ -102,11 +104,13 @@ async function calculateExpenditure() {
       mostAmountSpent: { restaurant: [], amountSpent: 0 },
     };
 
-    orderList.childNodes.forEach((node) => {
+    await Promise.all(Array.from(orderList.childNodes).map(node => {
       if (node.className === "al") {
-        processDataNode(node, orderListJson);
+        return processDataNode(node, orderListJson);
       }
-    });
+      return Promise.resolve();
+    }));
+    chrome.runtime.sendMessage({action : 'dataFetched', orderHistoryStat: orderListJson});
     console.log(orderListJson);
   }
 }
@@ -153,12 +157,13 @@ function updateOrderStats(restaurantName, amount, month, orderListJson) {
   updateMonthlyStats(restaurantName, amount, month, orderListJson);
 
   orderListJson.totalAmountSpent += amount;
+  orderListJson.totalOrders += 1;
 
   updateMostSpent(restaurantName, amount, orderListJson);
 }
 
 function updateMonthlyStats(restaurantName, amount, month, orderListJson) {
-  
+
   orderListJson["months"][month]["totalAmount"] += amount;
   orderListJson["months"][month]["totalOrders"] += 1;
 

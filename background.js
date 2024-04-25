@@ -46,6 +46,12 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         }, 2000); 
       });
     }
+
+    else if(message.action === 'dataFetched'){
+      
+        console.log(message.orderHistoryStat);
+    }
     sendResponse({ acknowledged: "Button click acknowledged." });
   });
+  
   
