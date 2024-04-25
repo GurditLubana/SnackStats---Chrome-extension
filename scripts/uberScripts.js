@@ -104,12 +104,19 @@ async function calculateExpenditure() {
       mostAmountSpent: { restaurant: [], amountSpent: 0 },
     };
 
-    await Promise.all(Array.from(orderList.childNodes).map(node => {
+    // await Promise.all(Array.from(orderList.childNodes).map(node => {
+    //   if (node.className === "al") {
+    //     return processDataNode(node, orderListJson);
+    //   }
+    //   return Promise.resolve();
+    // }));
+
+    orderList.childNodes.forEach((node) => {
       if (node.className === "al") {
-        return processDataNode(node, orderListJson);
+      processDataNode(node, orderListJson);
       }
-      return Promise.resolve();
-    }));
+    });
+    
     chrome.runtime.sendMessage({action : 'dataFetched', orderHistoryStat: orderListJson});
     console.log(orderListJson);
   }
