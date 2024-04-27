@@ -1,13 +1,11 @@
 if (document.readyState === "complete") {
-  console.log('Ready to Fetch the data.')
+  console.log("Ready to Fetch the data.");
   calculateExpenditure();
-}
-else {
-  window.addEventListener("load", ()=>{
-    console.log('UberEats not yet loaded completely.')
+} else {
+  window.addEventListener("load", () => {
+    console.log("UberEats not yet loaded completely.");
   });
 }
-
 
 async function calculateExpenditure() {
   const mainContent = document.getElementById("main-content");
@@ -19,6 +17,7 @@ async function calculateExpenditure() {
       totalAmountSpent: 0,
       totalOrders: 0,
       months: {
+        mostExpensiveMonth: { month: "", amountSpent: 0 },
         Jan: {
           totalAmount: 0,
           totalOrders: 0,
@@ -109,11 +108,14 @@ async function calculateExpenditure() {
 
     orderList.childNodes.forEach((node) => {
       if (node.className === "al") {
-      processDataNode(node, orderListJson);
+        processDataNode(node, orderListJson);
       }
     });
 
-    chrome.runtime.sendMessage({action : 'dataFetched', orderHistoryStat: orderListJson});
+    chrome.runtime.sendMessage({
+      action: "dataFetched",
+      orderHistoryStat: orderListJson,
+    });
     console.log(orderListJson);
   }
 }
@@ -141,7 +143,7 @@ function processDataNode(node, orderListJson) {
       : 0.0;
     const date = monthString.split("at")[0];
     const month = date.slice(-7, -4);
-    //console.log(restaurantName, amount, month);
+    
 
     updateOrderStats(restaurantName, amount, month, orderListJson);
   } catch (error) {
@@ -166,8 +168,17 @@ function updateOrderStats(restaurantName, amount, month, orderListJson) {
 }
 
 function updateMonthlyStats(restaurantName, amount, month, orderListJson) {
-
   orderListJson["months"][month]["totalAmount"] += amount;
+  if (
+    orderListJson["months"]["mostExpensiveMonth"]["amountSpent"] <
+    orderListJson["months"][month]["totalAmount"]
+  ) {
+    orderListJson["months"]["mostExpensiveMonth"]["amountSpent"] =
+      orderListJson["months"][month]["totalAmount"];
+    orderListJson["months"]["mostExpensiveMonth"]["month"] =
+      getFullMonthName(month);
+  }
+
   orderListJson["months"][month]["totalOrders"] += 1;
 
   if (!orderListJson["months"][month]["restaurantList"][restaurantName]) {
@@ -186,6 +197,12 @@ function updateMonthlyStats(restaurantName, amount, month, orderListJson) {
   }
 }
 
+function getFullMonthName(monthName) {
+  var date = new Date(monthName + " 1, 1970");
+  var fullMonthName = date.toLocaleString("default", { month: "long" });
+
+  return fullMonthName;
+}
 function updateMostSpent(restaurantName, amount, orderListJson) {
   const mostSpent = orderListJson.mostAmountSpent;
   const totalAmount = orderListJson[restaurantName].totalSpent;
