@@ -53,7 +53,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         console.log(orderHistoryStat);
         const statsDisplayScreen = "http://localhost:3000/";
   
-    chrome.tabs.query({ url: statsDisplayScreen + '*' }, function (tabs) {
+    chrome.tabs.query({ url: statsDisplayScreen }, function (tabs) {
       if (tabs.length > 0) {
 
         let existingTab = tabs[0];
@@ -62,18 +62,18 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
         chrome.tabs.create({ url: statsDisplayScreen }, function (newTab) {
           setTimeout(() => {
-            // chrome.scripting.executeScript(
-            //   {
-            //     target: { tabId: newTab.id },
-            //     files: ["snackStatScript.js"],
-            //   },
-            //   () => {
-            //     chrome.tabs.sendMessage(newTab.id, {
-            //       action: "fetchedData",
-            //       fullScrnshot: orderHistoryStat,
-            //     });
-            //   }
-            // );
+            chrome.scripting.executeScript(
+              {
+                target: { tabId: newTab.id },
+                files: ["scripts/snackStatScript.js"],
+              },
+              () => {
+                chrome.tabs.sendMessage(newTab.id, {
+                  action: "fetchedData",
+                  fetchedData: orderHistoryStat,
+                });
+              }
+            );
           }, 1000);
         });
       }

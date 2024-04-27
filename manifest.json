@@ -10,7 +10,7 @@
     
   ],
   "host_permissions": [
-    "*://*.ubereats.com/*", "*://*.skipthedishes.com/*", "*://*.doordash.com/*"
+    "*://*.ubereats.com/*", "*://*.skipthedishes.com/*", "*://*.doordash.com/*", "http://localhost:3000/"
   ],
   "background": {
     "service_worker": "background.js"
@@ -27,6 +27,10 @@
     {
       "matches": ["*://*.doordash.com/*"],
       "js": ["scripts/doordashScript.js"]
+    },
+    {
+      "matches": ["http://localhost:3000/"],
+      "js": ["scripts/snackStatScript.js"]
     }
   ],
   "icons": {
