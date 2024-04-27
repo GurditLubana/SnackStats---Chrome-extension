@@ -16,6 +16,18 @@ async function calculateExpenditure() {
     const orderListJson = {
       totalAmountSpent: 0,
       totalOrders: 0,
+      favRest: {
+        byAmountSpent: {
+          1: { restaurant: "", amountSpent: 0 },
+          2: { restaurant: "", amountSpent: 0 },
+          3: { restaurant: "", amountSpent: 0 },
+        },
+        byOrdersPlaced: {
+          1: { restaurant: "", orderCount: 0 },
+          2: { restaurant: "", orderCount: 0 },
+          3: { restaurant: "", orderCount: 0 },
+        },
+      },
       months: {
         mostExpensiveMonth: { month: "", amountSpent: 0 },
         Jan: {
@@ -103,7 +115,6 @@ async function calculateExpenditure() {
           restaurantList: {},
         },
       },
-      mostAmountSpent: { restaurant: [], amountSpent: 0 },
     };
 
     orderList.childNodes.forEach((node) => {
@@ -143,7 +154,6 @@ function processDataNode(node, orderListJson) {
       : 0.0;
     const date = monthString.split("at")[0];
     const month = date.slice(-7, -4);
-    
 
     updateOrderStats(restaurantName, amount, month, orderListJson);
   } catch (error) {
@@ -164,7 +174,7 @@ function updateOrderStats(restaurantName, amount, month, orderListJson) {
   orderListJson.totalAmountSpent += amount;
   orderListJson.totalOrders += 1;
 
-  updateMostSpent(restaurantName, amount, orderListJson);
+  updateFavRest(restaurantName, orderListJson);
 }
 
 function updateMonthlyStats(restaurantName, amount, month, orderListJson) {
@@ -203,17 +213,67 @@ function getFullMonthName(monthName) {
 
   return fullMonthName;
 }
-function updateMostSpent(restaurantName, amount, orderListJson) {
-  const mostSpent = orderListJson.mostAmountSpent;
+function updateFavRest(restaurantName, orderListJson) {
+  const favRest = orderListJson.favRest;
   const totalAmount = orderListJson[restaurantName].totalSpent;
+  const totalOrders = orderListJson[restaurantName].visits;
 
-  if (totalAmount > mostSpent.amountSpent) {
-    mostSpent.amountSpent = totalAmount;
-    mostSpent.restaurant = [restaurantName];
-  } else if (
-    totalAmount === mostSpent.amountSpent &&
-    !mostSpent.restaurant.includes(restaurantName)
-  ) {
-    mostSpent.restaurant.push(restaurantName);
+  topThreeAmountSpent(
+    restaurantName,
+    orderListJson,
+    totalAmount,
+    favRest,
+    1
+  );
+
+  topThreeOrdersCount(
+    restaurantName,
+    orderListJson,
+    totalOrders,
+    favRest,
+    1
+  )
+
+}
+
+function topThreeAmountSpent(
+  restaurantName,
+  orderListJson,
+  totalAmount,
+  favRest,
+  index
+) {
+  if (index > 3) {
+    return;
+  } else {
+    if (favRest["byAmountSpent"][index]["amountSpent"] < totalAmount) {
+      favRest["byAmountSpent"][index]["restaurant"] = restaurantName;
+      favRest["byAmountSpent"][index]["amountSpent"] = totalAmount;
+    } else {
+      topThreeAmountSpent(restaurantName, orderListJson, totalAmount, favRest, index+1);
+    }
   }
+
+  return;
+}
+
+function topThreeOrdersCount(
+  restaurantName,
+  orderListJson,
+  totalOrders,
+  favRest,
+  index
+) {
+  if (index > 3) {
+    return;
+  } else {
+    if (favRest["byOrdersPlaced"][index]["orderCount"] < totalOrders) {
+      favRest["byOrdersPlaced"][index]["restaurant"] = restaurantName;
+      favRest["byOrdersPlaced"][index]["orderCount"] = totalOrders;
+    } else {
+      topThreeOrdersCount(restaurantName, orderListJson, totalOrders, favRest, index+1);
+    }
+  }
+
+  return;
 }
