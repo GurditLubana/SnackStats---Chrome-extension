@@ -18,7 +18,8 @@
   "content_scripts": [
     {
       "matches": ["*://*.ubereats.com/*"],
-      "js": ["scripts/uberScripts.js"]
+      "js": ["scripts/uberScripts.js"],
+      "css": ["scripts/loadingScreen.css"]
     },
     {
       "matches": ["*://*.skipthedishes.com/*"],
@@ -39,6 +40,13 @@
     "48": "Images/logo48.png",
     "128": "Images/logo128.png"
   },
+  "web_accessible_resources": [
+    {
+      "resources": ["Images/loadingCreature.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+  ,  
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon" : "Images/logo2.png"

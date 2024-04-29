@@ -8,6 +8,7 @@ if (document.readyState === "complete") {
 }
 
 async function calculateExpenditure() {
+  showLoadingPage();
   const mainContent = document.getElementById("main-content");
   if (mainContent) {
     const orderList = mainContent.firstChild;
@@ -128,6 +129,7 @@ async function calculateExpenditure() {
       orderHistoryStat: orderListJson,
     });
     console.log(orderListJson);
+    removeLoadingScreen()
   }
 }
 
@@ -218,22 +220,9 @@ function updateFavRest(restaurantName, orderListJson) {
   const totalAmount = orderListJson[restaurantName].totalSpent;
   const totalOrders = orderListJson[restaurantName].visits;
 
-  topThreeAmountSpent(
-    restaurantName,
-    orderListJson,
-    totalAmount,
-    favRest,
-    1
-  );
+  topThreeAmountSpent(restaurantName, orderListJson, totalAmount, favRest, 1);
 
-  topThreeOrdersCount(
-    restaurantName,
-    orderListJson,
-    totalOrders,
-    favRest,
-    1
-  )
-
+  topThreeOrdersCount(restaurantName, orderListJson, totalOrders, favRest, 1);
 }
 
 function topThreeAmountSpent(
@@ -250,7 +239,13 @@ function topThreeAmountSpent(
       favRest["byAmountSpent"][index]["restaurant"] = restaurantName;
       favRest["byAmountSpent"][index]["amountSpent"] = totalAmount;
     } else {
-      topThreeAmountSpent(restaurantName, orderListJson, totalAmount, favRest, index+1);
+      topThreeAmountSpent(
+        restaurantName,
+        orderListJson,
+        totalAmount,
+        favRest,
+        index + 1
+      );
     }
   }
 
@@ -271,9 +266,56 @@ function topThreeOrdersCount(
       favRest["byOrdersPlaced"][index]["restaurant"] = restaurantName;
       favRest["byOrdersPlaced"][index]["orderCount"] = totalOrders;
     } else {
-      topThreeOrdersCount(restaurantName, orderListJson, totalOrders, favRest, index+1);
+      topThreeOrdersCount(
+        restaurantName,
+        orderListJson,
+        totalOrders,
+        favRest,
+        index + 1
+      );
     }
   }
 
   return;
+}
+
+function showLoadingPage() {
+  const loadingScreen = document.createElement("div");
+  loadingScreen.id = "loadingScreen";
+  loadingScreen.style.position = "fixed";
+  loadingScreen.style.left = "0";
+  loadingScreen.style.top = "0";
+  loadingScreen.style.width = "100vw";
+  loadingScreen.style.height = "100vh";
+  loadingScreen.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
+  loadingScreen.style.zIndex = "100005";
+
+  const creatureContainer = document.createElement("div");
+  creatureContainer.className = "creature-container";
+
+  const creatureImage = document.createElement("img");
+  creatureImage.className = "creature";
+  creatureImage.alt = "Creature Logo";
+  creatureImage.style.height = "500px";
+  creatureImage.style.width = "500px";
+  creatureImage.src = chrome.runtime.getURL("Images/loadingCreature.png");
+
+  creatureContainer.appendChild(creatureImage);
+
+  const loadingText = document.createElement("div");
+  loadingText.className = "loading-text";
+  loadingText.textContent = "Fetching Orders Summary...";
+
+  creatureContainer.appendChild(loadingText);
+
+  loadingScreen.appendChild(creatureContainer);
+
+  document.body.appendChild(loadingScreen);
+}
+
+
+function removeLoadingScreen(){
+
+  let loadingScreen = document.getElementById("loadingScreen");
+  loadingScreen.remove();
 }

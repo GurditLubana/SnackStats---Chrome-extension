@@ -1,0 +1,27 @@
+  
+  .creature-container {
+    text-align: center;
+
+  }
+  
+  .creature {
+    font-size: 2rem;
+    animation: bounce 0.5s infinite alternate;
+  }
+  
+  .loading-text {
+    margin-top: 10px;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  @keyframes bounce {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-20px);
+    }
+  }
+  
