@@ -364,6 +364,6 @@ function showLoadingPage() {
 
 function removeLoadingScreen(){
 
-  let loadingScreen = document.body.getElementById("loadingScreen");
+  let loadingScreen = document.getElementById("loadingScreen");
   loadingScreen.remove();
 }
