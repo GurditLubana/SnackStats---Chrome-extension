@@ -24,13 +24,13 @@ async function calculateExpenditure() {
 }
 
 async function expandOrdersList() {
-  const mainElement = document.querySelector(
+  const mainElement = document.body.querySelector(
     ".LayerManager__ChildrenContainer-sc-1k2ulq-0"
   );
   if (mainElement) {
-    while (document.querySelector(".iMIGfw")) {
+    while (document.body.querySelector(".iMIGfw")) {
       console.log("Clicked on 'load more' button.");
-      document.querySelector(".iMIGfw").click();
+      document.body.querySelector(".iMIGfw").click();
       await new Promise((resolve) => setTimeout(resolve, 1500));
     }
     console.log("Finished expanding the orders list.");
@@ -38,13 +38,12 @@ async function expandOrdersList() {
 }
 
 function fetchOrdersData() {
-  const mainContent = document.querySelector(
+  const mainContent = document.body.querySelector(
     '.StackChildren__StyledStackChildren-sc-1tveqpz-0[data-testid="OrdersV2"]'
   );
   if (!mainContent) {
-    throw new Error("Main content not found.");
+    console.log("Main content not found.");
   }
-
   const ordersList = mainContent.querySelector(
     ".StackChildren__StyledStackChildren-sc-1tveqpz-0"
   );
@@ -240,66 +239,94 @@ function updateFavRest(restaurantName, orderListJson) {
   const totalAmount = orderListJson[restaurantName].totalSpent;
   const totalOrders = orderListJson[restaurantName].visits;
 
-  topThreeAmountSpent(restaurantName, orderListJson, totalAmount, favRest, 1);
+  topThreeAmountSpent(favRest, restaurantName, totalAmount);
 
-  topThreeOrdersCount(restaurantName, orderListJson, totalOrders, favRest, 1);
+  topThreeOrdersCount(favRest,restaurantName, totalOrders);
 }
 
-function topThreeAmountSpent(
-  restaurantName,
-  orderListJson,
-  totalAmount,
-  favRest,
-  index
-) {
-  if (index > 3) {
+function topThreeAmountSpent(favRest, restaurant, newAmount) {
+  let byAmountSpent = favRest.byAmountSpent;
+
+  let existingEntryKey = Object.keys(byAmountSpent).find(
+    (key) => byAmountSpent[key].restaurant === restaurant
+  );
+
+  if (
+    existingEntryKey &&
+    newAmount <= byAmountSpent[existingEntryKey].amountSpent
+  ) {
     return;
-  } else {
-    if (favRest["byAmountSpent"][index]["amountSpent"] < totalAmount) {
-      favRest["byAmountSpent"][index]["restaurant"] = restaurantName;
-      favRest["byAmountSpent"][index]["amountSpent"] = totalAmount;
-    } else {
-      topThreeAmountSpent(
-        restaurantName,
-        orderListJson,
-        totalAmount,
-        favRest,
-        index + 1
-      );
-    }
   }
 
-  return;
-}
-
-function topThreeOrdersCount(
-  restaurantName,
-  orderListJson,
-  totalOrders,
-  favRest,
-  index
-) {
-  if (index > 3) {
-    return;
-  } else {
-    if (favRest["byOrdersPlaced"][index]["orderCount"] < totalOrders) {
-      favRest["byOrdersPlaced"][index]["restaurant"] = restaurantName;
-      favRest["byOrdersPlaced"][index]["orderCount"] = totalOrders;
-    } else {
-      topThreeOrdersCount(
-        restaurantName,
-        orderListJson,
-        totalOrders,
-        favRest,
-        index + 1
-      );
-    }
+  if (existingEntryKey) {
+    delete byAmountSpent[existingEntryKey];
   }
 
-  return;
+  let entries = Object.entries(byAmountSpent)
+    .filter(([_, value]) => value.restaurant)
+    .map(([key, value]) => ({ ...value, originalKey: key }));
+
+  entries.push({ restaurant, amountSpent: newAmount });
+
+  entries.sort((a, b) => b.amountSpent - a.amountSpent);
+
+  if (entries.length > 3) {
+    entries.pop();
+  }
+
+  entries.forEach((entry, index) => {
+    byAmountSpent[index + 1] = {
+      restaurant: entry.restaurant,
+      amountSpent: entry.amountSpent,
+    };
+  });
+
+  for (let i = entries.length + 1; i <= 3; i++) {
+    byAmountSpent[i] = byAmountSpent[i] || { restaurant: "", amountSpent: 0 };
+  }
 }
 
+function topThreeOrdersCount(favRest, restaurant, totalOrders) {
+  let byOrdersPlaced = favRest.byOrdersPlaced;
 
+  let existingEntryKey = Object.keys(byOrdersPlaced).find(
+    (key) => byOrdersPlaced[key].restaurant === restaurant
+  );
+
+  if (
+    existingEntryKey &&
+    totalOrders <= byOrdersPlaced[existingEntryKey].orderCount
+  ) {
+    return;
+  }
+
+  if (existingEntryKey) {
+    delete byOrdersPlaced[existingEntryKey];
+  }
+
+  let entries = Object.entries(byOrdersPlaced)
+    .filter(([_, value]) => value.restaurant)
+    .map(([key, value]) => ({ ...value, originalKey: key }));
+
+  entries.push({ restaurant, orderCount: totalOrders });
+
+  entries.sort((a, b) => b.orderCount - a.orderCount);
+
+  if (entries.length > 3) {
+    entries.pop();
+  }
+
+  entries.forEach((entry, index) => {
+    byOrdersPlaced[index + 1] = {
+      restaurant: entry.restaurant,
+      orderCount: entry.orderCount,
+    };
+  });
+
+  for (let i = entries.length + 1; i <= 3; i++) {
+    byOrdersPlaced[i] = byOrdersPlaced[i] || { restaurant: "", orderCount: 0 };
+  }
+}
 function showLoadingPage() {
   const loadingScreen = document.createElement("div");
   loadingScreen.id = "loadingScreen";
@@ -337,6 +364,6 @@ function showLoadingPage() {
 
 function removeLoadingScreen(){
 
-  let loadingScreen = document.getElementById("loadingScreen");
+  let loadingScreen = document.body.getElementById("loadingScreen");
   loadingScreen.remove();
 }
