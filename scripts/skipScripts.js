@@ -8,6 +8,7 @@ if (document.readyState === "complete") {
 }
 async function calculateExpenditure() {
   const mainElement = document.querySelector(".styles__Wrapper-sc-1kbgjlb-0");
+  showLoadingPage()
   if (mainElement) {
     while (mainElement.querySelector(".MuiButtonBase-root-330")) {
       console.log("Clicking on 'load more' button.");
@@ -160,6 +161,7 @@ function processOrderList(orderList) {
     orderHistoryStat: orderListJson,
   });
   console.log(orderListJson);
+  removeLoadingScreen();
 }
 
 function getMonth(node) {
@@ -305,4 +307,45 @@ function topThreeOrdersCount(
   }
 
   return;
+}
+
+function showLoadingPage() {
+  const loadingScreen = document.createElement("div");
+  loadingScreen.id = "loadingScreen";
+  loadingScreen.style.position = "fixed";
+  loadingScreen.style.left = "0";
+  loadingScreen.style.top = "0";
+  loadingScreen.style.width = "100vw";
+  loadingScreen.style.height = "100vh";
+  loadingScreen.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
+  loadingScreen.style.zIndex = "100005";
+
+  const creatureContainer = document.createElement("div");
+  creatureContainer.className = "creature-container";
+
+  const creatureImage = document.createElement("img");
+  creatureImage.className = "creature";
+  creatureImage.alt = "Creature Logo";
+  creatureImage.style.height = "500px";
+  creatureImage.style.width = "500px";
+  creatureImage.src = chrome.runtime.getURL("Images/loadingCreature.png");
+
+  creatureContainer.appendChild(creatureImage);
+
+  const loadingText = document.createElement("div");
+  loadingText.className = "loading-text";
+  loadingText.textContent = "Fetching Orders Summary...";
+
+  creatureContainer.appendChild(loadingText);
+
+  loadingScreen.appendChild(creatureContainer);
+
+  document.body.appendChild(loadingScreen);
+}
+
+
+function removeLoadingScreen(){
+
+  let loadingScreen = document.getElementById("loadingScreen");
+  loadingScreen.remove();
 }

@@ -8,6 +8,7 @@ if (document.readyState === "complete") {
 }
 
 async function calculateExpenditure() {
+  showLoadingPage()
   try {
     await expandOrdersList();
     const orderListJson = fetchOrdersData();
@@ -16,6 +17,7 @@ async function calculateExpenditure() {
       orderHistoryStat: orderListJson,
     });
     console.log(orderListJson);
+    removeLoadingScreen()
   } catch (error) {
     console.log("Error calculating expenditure:", error);
   }
@@ -295,4 +297,46 @@ function topThreeOrdersCount(
   }
 
   return;
+}
+
+
+function showLoadingPage() {
+  const loadingScreen = document.createElement("div");
+  loadingScreen.id = "loadingScreen";
+  loadingScreen.style.position = "fixed";
+  loadingScreen.style.left = "0";
+  loadingScreen.style.top = "0";
+  loadingScreen.style.width = "100vw";
+  loadingScreen.style.height = "100vh";
+  loadingScreen.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
+  loadingScreen.style.zIndex = "100005";
+
+  const creatureContainer = document.createElement("div");
+  creatureContainer.className = "creature-container";
+
+  const creatureImage = document.createElement("img");
+  creatureImage.className = "creature";
+  creatureImage.alt = "Creature Logo";
+  creatureImage.style.height = "500px";
+  creatureImage.style.width = "500px";
+  creatureImage.src = chrome.runtime.getURL("Images/loadingCreature.png");
+
+  creatureContainer.appendChild(creatureImage);
+
+  const loadingText = document.createElement("div");
+  loadingText.className = "loading-text";
+  loadingText.textContent = "Fetching Orders Summary...";
+
+  creatureContainer.appendChild(loadingText);
+
+  loadingScreen.appendChild(creatureContainer);
+
+  document.body.appendChild(loadingScreen);
+}
+
+
+function removeLoadingScreen(){
+
+  let loadingScreen = document.getElementById("loadingScreen");
+  loadingScreen.remove();
 }

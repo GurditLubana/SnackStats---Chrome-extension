@@ -23,11 +23,13 @@
     },
     {
       "matches": ["*://*.skipthedishes.com/*"],
-      "js": ["scripts/skipScripts.js"]
+      "js": ["scripts/skipScripts.js"],
+      "css": ["scripts/loadingScreen.css"]
     },
     {
       "matches": ["*://*.doordash.com/*"],
-      "js": ["scripts/doordashScript.js"]
+      "js": ["scripts/doordashScript.js"],
+      "css": ["scripts/loadingScreen.css"]
     },
     {
       "matches": ["http://localhost:3000/"],
