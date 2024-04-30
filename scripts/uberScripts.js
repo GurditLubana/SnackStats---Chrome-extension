@@ -1,8 +1,7 @@
 if (document.readyState === "complete") {
   console.log("Ready to Fetch the data.");
-  
-  calculateExpenditure();
 
+  calculateExpenditure();
 } else {
   window.addEventListener("load", () => {
     console.log("UberEats not yet loaded completely.");
@@ -14,127 +13,132 @@ async function calculateExpenditure() {
   const mainContent = document.getElementById("main-content");
   if (mainContent) {
     const orderList = mainContent.firstChild;
-    await expandOrderList(orderList);
 
-    const orderListJson = {
-      totalAmountSpent: 0,
-      totalOrders: 0,
-      favRest: {
-        byAmountSpent: {
-          1: { restaurant: "", amountSpent: 0 },
-          2: { restaurant: "", amountSpent: 0 },
-          3: { restaurant: "", amountSpent: 0 },
-        },
-        byOrdersPlaced: {
-          1: { restaurant: "", orderCount: 0 },
-          2: { restaurant: "", orderCount: 0 },
-          3: { restaurant: "", orderCount: 0 },
-        },
-      },
-      months: {
-        mostExpensiveMonth: { month: "", amountSpent: 0 },
-        Jan: {
-          totalAmount: 0,
-          totalOrders: 0,
-          favRest: "",
-          mostOrders: 0,
-          restaurantList: {},
-        },
-        Feb: {
-          totalAmount: 0,
-          totalOrders: 0,
-          favRest: "",
-          mostOrders: 0,
-          restaurantList: {},
-        },
-        Mar: {
-          totalAmount: 0,
-          totalOrders: 0,
-          favRest: "",
-          mostOrders: 0,
-          restaurantList: {},
-        },
-        Apr: {
-          totalAmount: 0,
-          totalOrders: 0,
-          favRest: "",
-          mostOrders: 0,
-          restaurantList: {},
-        },
-        May: {
-          totalAmount: 0,
-          totalOrders: 0,
-          favRest: "",
-          mostOrders: 0,
-          restaurantList: {},
-        },
-        Jun: {
-          totalAmount: 0,
-          totalOrders: 0,
-          favRest: "",
-          mostOrders: 0,
-          restaurantList: {},
-        },
-        Jul: {
-          totalAmount: 0,
-          totalOrders: 0,
-          favRest: "",
-          mostOrders: 0,
-          restaurantList: {},
-        },
-        Aug: {
-          totalAmount: 0,
-          totalOrders: 0,
-          favRest: "",
-          mostOrders: 0,
-          restaurantList: {},
-        },
-        Sep: {
-          totalAmount: 0,
-          totalOrders: 0,
-          favRest: "",
-          mostOrders: 0,
-          restaurantList: {},
-        },
-        Oct: {
-          totalAmount: 0,
-          totalOrders: 0,
-          favRest: "",
-          mostOrders: 0,
-          restaurantList: {},
-        },
-        Nov: {
-          totalAmount: 0,
-          totalOrders: 0,
-          favRest: "",
-          mostOrders: 0,
-          restaurantList: {},
-        },
-        Dec: {
-          totalAmount: 0,
-          totalOrders: 0,
-          favRest: "",
-          mostOrders: 0,
-          restaurantList: {},
-        },
-      },
-    };
+    if (orderList.children.length <= 1) {
+      console.log("no orders in the cart");
+      noOrdersInCartScreen();
+    } else {
+      await expandOrderList(orderList);
 
-    orderList.childNodes.forEach((node) => {
-      if (node.className === "al") {
-        processDataNode(node, orderListJson);
-      }
-    });
+      const orderListJson = {
+        totalAmountSpent: 0,
+        totalOrders: 0,
+        favRest: {
+          byAmountSpent: {
+            1: { restaurant: "", amountSpent: 0 },
+            2: { restaurant: "", amountSpent: 0 },
+            3: { restaurant: "", amountSpent: 0 },
+          },
+          byOrdersPlaced: {
+            1: { restaurant: "", orderCount: 0 },
+            2: { restaurant: "", orderCount: 0 },
+            3: { restaurant: "", orderCount: 0 },
+          },
+        },
+        months: {
+          mostExpensiveMonth: { month: "", amountSpent: 0 },
+          Jan: {
+            totalAmount: 0,
+            totalOrders: 0,
+            favRest: "",
+            mostOrders: 0,
+            restaurantList: {},
+          },
+          Feb: {
+            totalAmount: 0,
+            totalOrders: 0,
+            favRest: "",
+            mostOrders: 0,
+            restaurantList: {},
+          },
+          Mar: {
+            totalAmount: 0,
+            totalOrders: 0,
+            favRest: "",
+            mostOrders: 0,
+            restaurantList: {},
+          },
+          Apr: {
+            totalAmount: 0,
+            totalOrders: 0,
+            favRest: "",
+            mostOrders: 0,
+            restaurantList: {},
+          },
+          May: {
+            totalAmount: 0,
+            totalOrders: 0,
+            favRest: "",
+            mostOrders: 0,
+            restaurantList: {},
+          },
+          Jun: {
+            totalAmount: 0,
+            totalOrders: 0,
+            favRest: "",
+            mostOrders: 0,
+            restaurantList: {},
+          },
+          Jul: {
+            totalAmount: 0,
+            totalOrders: 0,
+            favRest: "",
+            mostOrders: 0,
+            restaurantList: {},
+          },
+          Aug: {
+            totalAmount: 0,
+            totalOrders: 0,
+            favRest: "",
+            mostOrders: 0,
+            restaurantList: {},
+          },
+          Sep: {
+            totalAmount: 0,
+            totalOrders: 0,
+            favRest: "",
+            mostOrders: 0,
+            restaurantList: {},
+          },
+          Oct: {
+            totalAmount: 0,
+            totalOrders: 0,
+            favRest: "",
+            mostOrders: 0,
+            restaurantList: {},
+          },
+          Nov: {
+            totalAmount: 0,
+            totalOrders: 0,
+            favRest: "",
+            mostOrders: 0,
+            restaurantList: {},
+          },
+          Dec: {
+            totalAmount: 0,
+            totalOrders: 0,
+            favRest: "",
+            mostOrders: 0,
+            restaurantList: {},
+          },
+        },
+      };
 
-    if(Object.keys(orderListJson).length > 4){
-
-      chrome.runtime.sendMessage({
-        action: "dataFetched",
-        orderHistoryStat: orderListJson,
+      orderList.childNodes.forEach((node) => {
+        if (node.className === "al") {
+          processDataNode(node, orderListJson);
+        }
       });
+
+      if (Object.keys(orderListJson).length > 4) {
+        chrome.runtime.sendMessage({
+          action: "dataFetched",
+          orderHistoryStat: orderListJson,
+        });
+      }
+      console.log(orderListJson);
+      removeLoadingScreen();
     }
-    console.log(orderListJson);
-    removeLoadingScreen();
   }
 }
 
@@ -227,7 +231,7 @@ function updateFavRest(restaurantName, orderListJson) {
 
   topThreeAmountSpent(favRest, restaurantName, totalAmount);
 
-  topThreeOrdersCount(favRest,restaurantName, totalOrders);
+  topThreeOrdersCount(favRest, restaurantName, totalOrders);
 }
 
 function topThreeAmountSpent(favRest, restaurant, newAmount) {
@@ -351,4 +355,15 @@ function showLoadingPage() {
 function removeLoadingScreen() {
   let loadingScreen = document.getElementById("loadingScreen");
   loadingScreen.remove();
+}
+
+function noOrdersInCartScreen() {
+  let creature = document.getElementsByClassName("creature")[0];
+  creature.src = chrome.runtime.getURL("Images/noOrderCreature.png");
+
+  let loadingText = document.getElementsByClassName("loading-text")[0];
+  loadingText.textContent = "Sorry! No Orders Available...";
+  setTimeout(function () {
+    removeLoadingScreen();
+  }, 1500);
 }

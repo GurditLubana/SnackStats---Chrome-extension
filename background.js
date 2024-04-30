@@ -18,7 +18,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
                 target: { tabId: newTab.id },
                 files: [scriptFile],
               });
-            }, 2000);
+            }, 1000);
 
             chrome.tabs.onUpdated.removeListener(checkForLoginPage);
           }
@@ -45,7 +45,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
             target: { tabId: newTab.id },
             files: ["scripts/skipScripts.js"],
           });
-        }, 2000);
+        }, 1000);
       }
     );
   } else if (message.action === "doordash") {

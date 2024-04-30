@@ -11,7 +11,7 @@
     
   ],
   "host_permissions": [
-    "*://auth.uber.com/*","*://*.ubereats.com/*", "*://*.skipthedishes.com/*", "*://*.doordash.com/*", "http://localhost:3000/"
+    "*://*.ubereats.com/*", "*://*.skipthedishes.com/*", "*://*.doordash.com/*", "http://localhost:3000/"
   ],
   "background": {
     "service_worker": "background.js"
