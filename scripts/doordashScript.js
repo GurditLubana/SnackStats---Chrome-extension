@@ -123,7 +123,7 @@ async function calculateExpenditure() {
         orderHistoryStat: orderListJson,
       });
       console.log(orderListJson);
-      // removeLoadingScreen();
+      removeLoadingScreen();
     }
     else{noOrdersInCartScreen()}
   } catch (error) {

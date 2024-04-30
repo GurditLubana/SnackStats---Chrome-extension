@@ -124,10 +124,13 @@ async function calculateExpenditure() {
       }
     });
 
-    chrome.runtime.sendMessage({
-      action: "dataFetched",
-      orderHistoryStat: orderListJson,
-    });
+    if(Object.keys(orderListJson).length > 4){
+
+      chrome.runtime.sendMessage({
+        action: "dataFetched",
+        orderHistoryStat: orderListJson,
+      });
+    }
     console.log(orderListJson);
     removeLoadingScreen();
   }
