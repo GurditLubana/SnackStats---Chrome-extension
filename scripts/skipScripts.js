@@ -1,11 +1,11 @@
-/**
- * edge cases: when there are no orders in the order history
- * when user is not logged in
- */
-
 if (document.readyState === "complete") {
   console.log("Ready to Fetch the data.");
-  calculateExpenditure();
+  const currentUrl = window.location.href;
+  if (currentUrl === "https://www.skipthedishes.com/") {
+    askToLogin();
+  } else {
+    calculateExpenditure();
+  }
 } else {
   window.addEventListener("load", () => {
     console.log("Skip not yet loaded completely.");
@@ -395,5 +395,37 @@ function noOrdersInCartScreen() {
   loadingText.textContent = "Sorry! No Orders Available...";
   setTimeout(function () {
     removeLoadingScreen();
-  }, 3000);
+  }, 1500);
+}
+
+function askToLogin() {
+  const loadingScreen = document.createElement("div");
+  loadingScreen.id = "loadingScreen";
+  loadingScreen.style.position = "fixed";
+  loadingScreen.style.left = "0";
+  loadingScreen.style.top = "0";
+  loadingScreen.style.width = "100vw";
+  loadingScreen.style.height = "100vh";
+  loadingScreen.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
+  loadingScreen.style.zIndex = "100005";
+
+  const creatureContainer = document.createElement("div");
+  creatureContainer.className = "creature-container";
+
+  const creatureImage = document.createElement("img");
+  creatureImage.className = "creature";
+  creatureImage.alt = "Creature Logo";
+  creatureImage.style.height = "500px";
+  creatureImage.style.width = "500px";
+  creatureImage.src = chrome.runtime.getURL("Images/loginCreature.png");
+
+  creatureContainer.appendChild(creatureImage);
+
+  loadingScreen.appendChild(creatureContainer);
+
+  document.body.appendChild(loadingScreen);
+
+  setTimeout(function () {
+    removeLoadingScreen();
+  }, 1500);
 }

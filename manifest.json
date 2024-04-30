@@ -6,11 +6,12 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "tabs"  
+    "tabs",
+    "notifications"
     
   ],
   "host_permissions": [
-    "*://*.ubereats.com/*", "*://*.skipthedishes.com/*", "*://*.doordash.com/*", "http://localhost:3000/"
+    "*://auth.uber.com/*","*://*.ubereats.com/*", "*://*.skipthedishes.com/*", "*://*.doordash.com/*", "http://localhost:3000/"
   ],
   "background": {
     "service_worker": "background.js"
@@ -44,7 +45,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["Images/loadingCreature.png", "Images/noOrderCreature.png"],
+      "resources": ["Images/loadingCreature.png", "Images/noOrderCreature.png", "Images/loginCreature.png"],
       "matches": ["<all_urls>"]
     }
   ]

@@ -1,6 +1,13 @@
 if (document.readyState === "complete") {
   console.log("Ready to Fetch the data.");
-  calculateExpenditure();
+
+  const currentUrl = window.location.href;
+  if (currentUrl.includes("identity.doordash.com/auth?")) {
+    console.log("We are on the DoorDash authentication page.");
+    askToLogin();
+  } else {
+    calculateExpenditure();
+  }
 } else {
   window.addEventListener("load", () => {
     console.log("Doordash not yet loaded completely.");
@@ -117,15 +124,16 @@ async function calculateExpenditure() {
     };
 
     const result = fetchOrdersData(orderListJson);
-    if(result){
+    if (result) {
       chrome.runtime.sendMessage({
         action: "dataFetched",
         orderHistoryStat: orderListJson,
       });
       console.log(orderListJson);
       removeLoadingScreen();
+    } else {
+      noOrdersInCartScreen();
     }
-    else{noOrdersInCartScreen()}
   } catch (error) {
     console.log("Error calculating expenditure:", error);
   }
@@ -149,8 +157,10 @@ function fetchOrdersData(orderListJson) {
   // const mainContent = document.body.querySelector(
   //   '.StackChildren__StyledStackChildren-sc-1tveqpz-0[data-testid="OrdersV2"]'
   // );
-  let mainContent = document.body.querySelector(".LayerManager__ChildrenContainer-sc-1k2ulq-0");
-  console.log("main element found", mainContent)
+  let mainContent = document.body.querySelector(
+    ".LayerManager__ChildrenContainer-sc-1k2ulq-0"
+  );
+  console.log("main element found", mainContent);
   // if (!mainContent) {
   //   console.log("Main content not found.");
   // }
@@ -161,14 +171,12 @@ function fetchOrdersData(orderListJson) {
   let ordersListTab = document.querySelector(
     '.StackChildren__StyledStackChildren-sc-1tveqpz-0[data-testid="OrdersV2"]'
   );
-  
-  
-  if(ordersListTab){
-    console.log("this is orders List", ordersListTab)
+
+  if (ordersListTab) {
+    console.log("this is orders List", ordersListTab);
     console.log("length ", ordersListTab.children.length);
     const ordersList = ordersListTab.children[2];
-    console.log("I am now orderList", ordersList)
-
+    console.log("I am now orderList", ordersList);
 
     ordersList.childNodes.forEach((node) => {
       if (node.nodeType === Node.ELEMENT_NODE) {
@@ -196,9 +204,8 @@ function fetchOrdersData(orderListJson) {
         }
       }
     });
-  }
-  else{
-    console.log("No order available")
+  } else {
+    console.log("No order available");
     return false;
   }
 
@@ -264,7 +271,7 @@ function updateFavRest(restaurantName, orderListJson) {
 
   topThreeAmountSpent(favRest, restaurantName, totalAmount);
 
-  topThreeOrdersCount(favRest,restaurantName, totalOrders);
+  topThreeOrdersCount(favRest, restaurantName, totalOrders);
 }
 
 function topThreeAmountSpent(favRest, restaurant, newAmount) {
@@ -383,12 +390,10 @@ function showLoadingPage() {
 
   document.body.appendChild(loadingScreen);
 
-  console.log(loadingScreen)
+  console.log(loadingScreen);
 }
 
-
-function removeLoadingScreen(){
-
+function removeLoadingScreen() {
   let loadingScreen = document.getElementById("loadingScreen");
   loadingScreen.remove();
 }
@@ -401,5 +406,37 @@ function noOrdersInCartScreen() {
   loadingText.textContent = "Sorry! No Orders Available...";
   setTimeout(function () {
     removeLoadingScreen();
-  }, 3000);
+  }, 1500);
+}
+
+function askToLogin() {
+  const loadingScreen = document.createElement("div");
+  loadingScreen.id = "loadingScreen";
+  loadingScreen.style.position = "fixed";
+  loadingScreen.style.left = "0";
+  loadingScreen.style.top = "0";
+  loadingScreen.style.width = "100vw";
+  loadingScreen.style.height = "100vh";
+  loadingScreen.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
+  loadingScreen.style.zIndex = "100005";
+
+  const creatureContainer = document.createElement("div");
+  creatureContainer.className = "creature-container";
+
+  const creatureImage = document.createElement("img");
+  creatureImage.className = "creature";
+  creatureImage.alt = "Creature Logo";
+  creatureImage.style.height = "500px";
+  creatureImage.style.width = "500px";
+  creatureImage.src = chrome.runtime.getURL("Images/loginCreature.png");
+
+  creatureContainer.appendChild(creatureImage);
+
+  loadingScreen.appendChild(creatureContainer);
+
+  document.body.appendChild(loadingScreen);
+
+  setTimeout(function () {
+    removeLoadingScreen();
+  }, 1500);
 }

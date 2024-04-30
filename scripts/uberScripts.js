@@ -1,6 +1,8 @@
 if (document.readyState === "complete") {
   console.log("Ready to Fetch the data.");
+  
   calculateExpenditure();
+
 } else {
   window.addEventListener("load", () => {
     console.log("UberEats not yet loaded completely.");
