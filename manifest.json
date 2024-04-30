@@ -44,7 +44,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["Images/loadingCreature.png"],
+      "resources": ["Images/loadingCreature.png", "Images/noOrderCreature.png"],
       "matches": ["<all_urls>"]
     }
   ]

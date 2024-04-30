@@ -1,3 +1,8 @@
+/**
+ * edge cases: when there are no orders in the order history
+ * when user is not logged in
+ */
+
 if (document.readyState === "complete") {
   console.log("Ready to Fetch the data.");
   calculateExpenditure();
@@ -8,11 +13,15 @@ if (document.readyState === "complete") {
 }
 async function calculateExpenditure() {
   const mainElement = document.querySelector(".styles__Wrapper-sc-1kbgjlb-0");
-  showLoadingPage()
+  showLoadingPage();
   if (mainElement) {
-    while (mainElement.querySelector(".MuiButtonBase-root-330")) {
+    while (
+      mainElement.querySelector(".styles__LoadMoreContainer-sc-dfy3yk-6")
+    ) {
       console.log("Clicking on 'load more' button.");
-      mainElement.querySelector(".MuiButtonBase-root-330").click();
+      mainElement
+        .querySelector(".styles__LoadMoreContainer-sc-dfy3yk-6")
+        .firstChild.click();
       await new Promise((resolve) => setTimeout(resolve, 1500));
     }
     console.log("Finished expanding the orders list.");
@@ -27,7 +36,8 @@ function waitForContent(mainElement, callback) {
       '.styles__OrderList-sc-gks0ae-0[role="list"]'
     );
     if (!orderList) {
-      console.error("Order list not found.");
+      console.log("Order list not found.");
+      noOrdersInCartScreen();
       return;
     }
 
@@ -142,17 +152,15 @@ function processOrderList(orderList) {
 
   orderList.childNodes.forEach((node) => {
     if (node.nodeType === Node.ELEMENT_NODE) {
-      try{
-
+      try {
         const restaurantName = getRestaurantName(node);
         const amount = getAmount(node);
         const month = getMonth(node);
         if (restaurantName !== "No restaurant name found") {
           updateOrderList(restaurantName, amount, month, orderListJson);
         }
-      }
-      catch(error){
-        console.log(error)
+      } catch (error) {
+        console.log(error);
       }
     }
   });
@@ -252,7 +260,7 @@ function updateFavRest(restaurantName, orderListJson) {
 
   topThreeAmountSpent(favRest, restaurantName, totalAmount);
 
-  topThreeOrdersCount(favRest,restaurantName, totalOrders);
+  topThreeOrdersCount(favRest, restaurantName, totalOrders);
 }
 
 function topThreeAmountSpent(favRest, restaurant, newAmount) {
@@ -354,6 +362,7 @@ function showLoadingPage() {
   creatureContainer.className = "creature-container";
 
   const creatureImage = document.createElement("img");
+  creatureImage.id = "creature";
   creatureImage.className = "creature";
   creatureImage.alt = "Creature Logo";
   creatureImage.style.height = "500px";
@@ -373,9 +382,18 @@ function showLoadingPage() {
   document.body.appendChild(loadingScreen);
 }
 
-
-function removeLoadingScreen(){
-
+function removeLoadingScreen() {
   let loadingScreen = document.getElementById("loadingScreen");
   loadingScreen.remove();
+}
+
+function noOrdersInCartScreen() {
+  let creature = document.getElementById("creature");
+  creature.src = chrome.runtime.getURL("Images/noOrderCreature.png");
+
+  let loadingText = document.getElementsByClassName("loading-text")[0];
+  loadingText.textContent = "Sorry! No Orders Available...";
+  setTimeout(function () {
+    removeLoadingScreen();
+  }, 3000);
 }

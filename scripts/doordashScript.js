@@ -8,16 +8,124 @@ if (document.readyState === "complete") {
 }
 
 async function calculateExpenditure() {
-  showLoadingPage()
+  showLoadingPage();
   try {
     await expandOrdersList();
-    const orderListJson = fetchOrdersData();
-    chrome.runtime.sendMessage({
-      action: "dataFetched",
-      orderHistoryStat: orderListJson,
-    });
-    console.log(orderListJson);
-    removeLoadingScreen()
+
+    const orderListJson = {
+      totalAmountSpent: 0,
+      totalOrders: 0,
+      favRest: {
+        byAmountSpent: {
+          1: { restaurant: "", amountSpent: 0 },
+          2: { restaurant: "", amountSpent: 0 },
+          3: { restaurant: "", amountSpent: 0 },
+        },
+        byOrdersPlaced: {
+          1: { restaurant: "", orderCount: 0 },
+          2: { restaurant: "", orderCount: 0 },
+          3: { restaurant: "", orderCount: 0 },
+        },
+      },
+      months: {
+        mostExpensiveMonth: { month: "", amountSpent: 0 },
+        Jan: {
+          totalAmount: 0,
+          totalOrders: 0,
+          favRest: "",
+          mostOrders: 0,
+          restaurantList: {},
+        },
+        Feb: {
+          totalAmount: 0,
+          totalOrders: 0,
+          favRest: "",
+          mostOrders: 0,
+          restaurantList: {},
+        },
+        Mar: {
+          totalAmount: 0,
+          totalOrders: 0,
+          favRest: "",
+          mostOrders: 0,
+          restaurantList: {},
+        },
+        Apr: {
+          totalAmount: 0,
+          totalOrders: 0,
+          favRest: "",
+          mostOrders: 0,
+          restaurantList: {},
+        },
+        May: {
+          totalAmount: 0,
+          totalOrders: 0,
+          favRest: "",
+          mostOrders: 0,
+          restaurantList: {},
+        },
+        Jun: {
+          totalAmount: 0,
+          totalOrders: 0,
+          favRest: "",
+          mostOrders: 0,
+          restaurantList: {},
+        },
+        Jul: {
+          totalAmount: 0,
+          totalOrders: 0,
+          favRest: "",
+          mostOrders: 0,
+          restaurantList: {},
+        },
+        Aug: {
+          totalAmount: 0,
+          totalOrders: 0,
+          favRest: "",
+          mostOrders: 0,
+          restaurantList: {},
+        },
+        Sep: {
+          totalAmount: 0,
+          totalOrders: 0,
+          favRest: "",
+          mostOrders: 0,
+          restaurantList: {},
+        },
+        Oct: {
+          totalAmount: 0,
+          totalOrders: 0,
+          favRest: "",
+          mostOrders: 0,
+          restaurantList: {},
+        },
+        Nov: {
+          totalAmount: 0,
+          totalOrders: 0,
+          favRest: "",
+          mostOrders: 0,
+          restaurantList: {},
+        },
+        Dec: {
+          totalAmount: 0,
+          totalOrders: 0,
+          favRest: "",
+          mostOrders: 0,
+          restaurantList: {},
+        },
+      },
+    };
+
+    const result = fetchOrdersData(orderListJson);
+    if(result){
+      chrome.runtime.sendMessage({
+        action: "dataFetched",
+        orderHistoryStat: orderListJson,
+      });
+      console.log(orderListJson);
+      // removeLoadingScreen();
+    }
+    else{noOrdersInCartScreen()}
   } catch (error) {
     console.log("Error calculating expenditure:", error);
   }
@@ -37,149 +145,64 @@ async function expandOrdersList() {
   }
 }
 
-function fetchOrdersData() {
-  const mainContent = document.body.querySelector(
+function fetchOrdersData(orderListJson) {
+  // const mainContent = document.body.querySelector(
+  //   '.StackChildren__StyledStackChildren-sc-1tveqpz-0[data-testid="OrdersV2"]'
+  // );
+  let mainContent = document.body.querySelector(".LayerManager__ChildrenContainer-sc-1k2ulq-0");
+  console.log("main element found", mainContent)
+  // if (!mainContent) {
+  //   console.log("Main content not found.");
+  // }
+  // if(mainContent){
+  //   const list = mainContent.children[0].children[0].children[0].children[1].children[0].children[0]
+  //   console.log("This is  list: ",list)
+  // }
+  let ordersListTab = document.querySelector(
     '.StackChildren__StyledStackChildren-sc-1tveqpz-0[data-testid="OrdersV2"]'
   );
-  if (!mainContent) {
-    console.log("Main content not found.");
-  }
-  const ordersList = mainContent.querySelector(
-    ".StackChildren__StyledStackChildren-sc-1tveqpz-0"
-  );
+  
+  
+  if(ordersListTab){
+    console.log("this is orders List", ordersListTab)
+    console.log("length ", ordersListTab.children.length);
+    const ordersList = ordersListTab.children[2];
+    console.log("I am now orderList", ordersList)
 
-  const orderListJson = {
-    totalAmountSpent: 0,
-    totalOrders: 0,
-    favRest: {
-      byAmountSpent: {
-        1: { restaurant: "", amountSpent: 0 },
-        2: { restaurant: "", amountSpent: 0 },
-        3: { restaurant: "", amountSpent: 0 },
-      },
-      byOrdersPlaced: {
-        1: { restaurant: "", orderCount: 0 },
-        2: { restaurant: "", orderCount: 0 },
-        3: { restaurant: "", orderCount: 0 },
-      },
-    },
-    months: {
-      mostExpensiveMonth: { month: "", amountSpent: 0 },
-      Jan: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Feb: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Mar: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Apr: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      May: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Jun: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Jul: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Aug: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Sep: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Oct: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Nov: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Dec: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-    },
-  };
 
-  ordersList.childNodes.forEach((node) => {
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      const restaurantName =
-        node
-          .querySelector(".Text-sc-16fu6d-0.sc-7ff7002-1")
-          ?.textContent.trim() || "No restaurant name found";
-      const amountText = node
-        .querySelector(".order-detail-body-wrapper")
-        .firstChild.firstChild.firstChild.firstChild?.textContent.split(
-          " • "
-        )[1]
-        .split("$")[1];
-      const amount = parseFloat(amountText) || 0.0;
-      const dateString = node
-        .querySelector(".order-detail-body-wrapper")
-        .firstChild.firstChild.firstChild.firstChild?.textContent.split(
-          " • "
-        )[0]
-        .split(",")[1];
-      const month = dateString.slice(1, 4);
-      console.log(restaurantName, amount, month);
-      if (restaurantName !== "No restaurant name found") {
-        updateOrderList(restaurantName, amount, month, orderListJson);
+    ordersList.childNodes.forEach((node) => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const restaurantName =
+          node
+            .querySelector(".Text-sc-16fu6d-0.sc-7ff7002-1")
+            ?.textContent.trim() || "No restaurant name found";
+        const amountText = node
+          .querySelector(".order-detail-body-wrapper")
+          .firstChild.firstChild.firstChild.firstChild?.textContent.split(
+            " • "
+          )[1]
+          .split("$")[1];
+        const amount = parseFloat(amountText) || 0.0;
+        const dateString = node
+          .querySelector(".order-detail-body-wrapper")
+          .firstChild.firstChild.firstChild.firstChild?.textContent.split(
+            " • "
+          )[0]
+          .split(",")[1];
+        const month = dateString.slice(1, 4);
+        console.log(restaurantName, amount, month);
+        if (restaurantName !== "No restaurant name found") {
+          updateOrderList(restaurantName, amount, month, orderListJson);
+        }
       }
-    }
-  });
+    });
+  }
+  else{
+    console.log("No order available")
+    return false;
+  }
 
-  return orderListJson;
+  return true;
 }
 
 function updateOrderList(restaurantName, amount, month, orderListJson) {
@@ -359,6 +382,8 @@ function showLoadingPage() {
   loadingScreen.appendChild(creatureContainer);
 
   document.body.appendChild(loadingScreen);
+
+  console.log(loadingScreen)
 }
 
 
@@ -366,4 +391,15 @@ function removeLoadingScreen(){
 
   let loadingScreen = document.getElementById("loadingScreen");
   loadingScreen.remove();
+}
+
+function noOrdersInCartScreen() {
+  let creature = document.getElementsByClassName("creature")[0];
+  creature.src = chrome.runtime.getURL("Images/noOrderCreature.png");
+
+  let loadingText = document.getElementsByClassName("loading-text")[0];
+  loadingText.textContent = "Sorry! No Orders Available...";
+  setTimeout(function () {
+    removeLoadingScreen();
+  }, 3000);
 }
