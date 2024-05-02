@@ -9,7 +9,7 @@ if (document.readyState === "complete") {
 }
 
 async function calculateExpenditure() {
-  showLoadingPage();
+  // showLoadingPage();
   const mainContent = document.getElementById("main-content");
   if (mainContent) {
     const orderList = mainContent.firstChild;
@@ -124,9 +124,11 @@ async function calculateExpenditure() {
         },
       };
 
+      var orderNumber = 0;
       orderList.childNodes.forEach((node) => {
         if (node.className === "al") {
-          processDataNode(node, orderListJson);
+          processDataNode(node, orderListJson, orderNumber);
+          orderNumber += 1;
         }
       });
 
@@ -137,7 +139,7 @@ async function calculateExpenditure() {
         });
       }
       console.log(orderListJson);
-      removeLoadingScreen();
+      // removeLoadingScreen();
     }
   }
 }
@@ -152,7 +154,7 @@ async function expandOrderList(orderList) {
   console.log("Finished expanding all items.");
 }
 
-function processDataNode(node, orderListJson) {
+async function processDataNode(node, orderListJson, index) {
   try {
     const orderInfo = node.children[2].children[0].children[0].children[0];
     const restaurantName = orderInfo.children[0].children[0].textContent.trim();
@@ -165,6 +167,28 @@ function processDataNode(node, orderListJson) {
       : 0.0;
     const date = monthString.split("at")[0];
     const month = date.slice(-7, -4);
+    const receiptLink = orderInfo.children[1].children[0].childNodes[4];
+    if (index === 0) {
+      console.log("Link: ", receiptLink, index);
+      receiptLink.click();
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      var iframe = document.querySelector("iframe");
+      // console.log(iframe);
+
+
+      const iframeDocument =
+        iframe.contentDocument || iframe.contentWindow.document;
+
+     
+      const orderDate = iframeDocument.querySelector('.Uber18_text_p1[width="80%"]'); 
+      const orderYear = (orderDate.children[1].textContent.trim().split(",")[1]).trim()
+
+      console.log("orderDate: ", orderYear);
+      const closeBtn = document.querySelector('button[aria-label="Close"]');
+      // console.log(closeBtn)
+      closeBtn.click();
+      // iframe.remove();
+    }
 
     updateOrderStats(restaurantName, amount, month, orderListJson);
   } catch (error) {
