@@ -35,93 +35,7 @@ async function calculateExpenditure() {
             3: { restaurant: "", orderCount: 0 },
           },
         },
-        months: {
-          mostExpensiveMonth: { month: "", amountSpent: 0 },
-          Jan: {
-            totalAmount: 0,
-            totalOrders: 0,
-            favRest: "",
-            mostOrders: 0,
-            restaurantList: {},
-          },
-          Feb: {
-            totalAmount: 0,
-            totalOrders: 0,
-            favRest: "",
-            mostOrders: 0,
-            restaurantList: {},
-          },
-          Mar: {
-            totalAmount: 0,
-            totalOrders: 0,
-            favRest: "",
-            mostOrders: 0,
-            restaurantList: {},
-          },
-          Apr: {
-            totalAmount: 0,
-            totalOrders: 0,
-            favRest: "",
-            mostOrders: 0,
-            restaurantList: {},
-          },
-          May: {
-            totalAmount: 0,
-            totalOrders: 0,
-            favRest: "",
-            mostOrders: 0,
-            restaurantList: {},
-          },
-          Jun: {
-            totalAmount: 0,
-            totalOrders: 0,
-            favRest: "",
-            mostOrders: 0,
-            restaurantList: {},
-          },
-          Jul: {
-            totalAmount: 0,
-            totalOrders: 0,
-            favRest: "",
-            mostOrders: 0,
-            restaurantList: {},
-          },
-          Aug: {
-            totalAmount: 0,
-            totalOrders: 0,
-            favRest: "",
-            mostOrders: 0,
-            restaurantList: {},
-          },
-          Sep: {
-            totalAmount: 0,
-            totalOrders: 0,
-            favRest: "",
-            mostOrders: 0,
-            restaurantList: {},
-          },
-          Oct: {
-            totalAmount: 0,
-            totalOrders: 0,
-            favRest: "",
-            mostOrders: 0,
-            restaurantList: {},
-          },
-          Nov: {
-            totalAmount: 0,
-            totalOrders: 0,
-            favRest: "",
-            mostOrders: 0,
-            restaurantList: {},
-          },
-          Dec: {
-            totalAmount: 0,
-            totalOrders: 0,
-            favRest: "",
-            mostOrders: 0,
-            restaurantList: {},
-          },
-        },
+        years:{},
       };
 
       var orderNumber = 0;
@@ -197,7 +111,7 @@ async function processDataNode(node, orderListJson, index, prevMonth, currYear) 
 
     }
 
-    updateOrderStats(restaurantName, amount, month, orderListJson);
+    updateOrderStats(restaurantName, amount, month, orderListJson, currYear);
     return [month, currYear];
 
   } catch (error) {
@@ -225,14 +139,18 @@ async function fetchYear(orderInfo, currYear) {
         closeBtn.click();
         return year
       }
-      return (parseInt(currYear) - 1).toString() ;
+      else{
+
+        return (parseInt(currYear) - 1).toString() ;
+      }
 
       
 }
 
 
 
-function updateOrderStats(restaurantName, amount, month, orderListJson) {
+function updateOrderStats(restaurantName, amount, month, orderListJson, currYear) {
+  
   if (!orderListJson[restaurantName]) {
     orderListJson[restaurantName] = { visits: 1, totalSpent: amount };
   } else {
@@ -240,41 +158,133 @@ function updateOrderStats(restaurantName, amount, month, orderListJson) {
     orderListJson[restaurantName].totalSpent += amount;
   }
 
-  updateMonthlyStats(restaurantName, amount, month, orderListJson);
+  updateMonthlyStats(restaurantName, amount, month, orderListJson, currYear);
 
   orderListJson.totalAmountSpent += amount;
   orderListJson.totalOrders += 1;
 
-  updateFavRest(restaurantName, orderListJson);
+  updateFavRest(restaurantName, orderListJson, currYear);
 }
 
-function updateMonthlyStats(restaurantName, amount, month, orderListJson) {
-  orderListJson["months"][month]["totalAmount"] += amount;
+function updateMonthlyStats(restaurantName, amount, month, orderListJson, currYear) {
+
+  let year = orderListJson["years"]
+  if(!year[currYear]){
+
+    year[currYear] = {
+      mostExpensiveMonth: { month: "", amountSpent: 0 },
+      Jan: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Feb: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Mar: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Apr: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      May: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Jun: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Jul: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Aug: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Sep: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Oct: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Nov: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Dec: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+    }
+  }
+  year[currYear][month]["totalAmount"] += amount;
   if (
-    orderListJson["months"]["mostExpensiveMonth"]["amountSpent"] <
-    orderListJson["months"][month]["totalAmount"]
+    year[currYear]["mostExpensiveMonth"]["amountSpent"] <
+    year[currYear][month]["totalAmount"]
   ) {
-    orderListJson["months"]["mostExpensiveMonth"]["amountSpent"] =
-      orderListJson["months"][month]["totalAmount"];
-    orderListJson["months"]["mostExpensiveMonth"]["month"] =
+    year[currYear]["mostExpensiveMonth"]["amountSpent"] =
+      year[currYear][month]["totalAmount"];
+    year[currYear]["mostExpensiveMonth"]["month"] =
       getFullMonthName(month);
   }
 
-  orderListJson["months"][month]["totalOrders"] += 1;
+  year[currYear][month]["totalOrders"] += 1;
 
-  if (!orderListJson["months"][month]["restaurantList"][restaurantName]) {
-    orderListJson["months"][month]["restaurantList"][restaurantName] = 1;
+  if (!year[currYear][month]["restaurantList"][restaurantName]) {
+    year[currYear][month]["restaurantList"][restaurantName] = 1;
   } else {
-    orderListJson["months"][month]["restaurantList"][restaurantName] += 1;
+    year[currYear][month]["restaurantList"][restaurantName] += 1;
   }
 
   if (
-    orderListJson["months"][month]["mostOrders"] <
-    orderListJson["months"][month]["restaurantList"][restaurantName]
+    year[currYear][month]["mostOrders"] <
+    year[currYear][month]["restaurantList"][restaurantName]
   ) {
-    orderListJson["months"][month]["mostOrders"] =
-      orderListJson["months"][month]["restaurantList"][restaurantName];
-    orderListJson["months"][month]["favRest"] = restaurantName;
+    year[currYear][month]["mostOrders"] =
+      year[currYear][month]["restaurantList"][restaurantName];
+    year[currYear][month]["favRest"] = restaurantName;
   }
 }
 
