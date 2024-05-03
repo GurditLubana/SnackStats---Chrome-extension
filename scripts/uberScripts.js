@@ -9,7 +9,7 @@ if (document.readyState === "complete") {
 }
 
 async function calculateExpenditure() {
-  // showLoadingPage();
+  showLoadingPage();
   const mainContent = document.getElementById("main-content");
   if (mainContent) {
     const orderList = mainContent.firstChild;
@@ -125,12 +125,16 @@ async function calculateExpenditure() {
       };
 
       var orderNumber = 0;
-      orderList.childNodes.forEach((node) => {
+      var prevMonth;
+      let currYear;
+      for (const node of orderList.childNodes) {
         if (node.className === "al") {
-          processDataNode(node, orderListJson, orderNumber);
+          [prevMonth, currYear] = await processDataNode(node, orderListJson, orderNumber, prevMonth, currYear);
+          // console.log('last order \'s month was ', prevMonth)
+          console.log(currYear)
           orderNumber += 1;
         }
-      });
+      };
 
       if (Object.keys(orderListJson).length > 4) {
         chrome.runtime.sendMessage({
@@ -139,7 +143,7 @@ async function calculateExpenditure() {
         });
       }
       console.log(orderListJson);
-      // removeLoadingScreen();
+      removeLoadingScreen();
     }
   }
 }
@@ -154,7 +158,23 @@ async function expandOrderList(orderList) {
   console.log("Finished expanding all items.");
 }
 
-async function processDataNode(node, orderListJson, index) {
+async function processDataNode(node, orderListJson, index, prevMonth, currYear) {
+
+  const monthMap = {
+    Jan: 1,
+    Feb: 2,
+    Mar: 3,
+    Apr: 4,
+    May: 5,
+    Jun: 6,
+    Jul: 7,
+    Aug: 8,
+    Sep: 9,
+    Oct: 10,
+    Nov: 11,
+    Dec: 12
+  };
+
   try {
     const orderInfo = node.children[2].children[0].children[0].children[0];
     const restaurantName = orderInfo.children[0].children[0].textContent.trim();
@@ -167,34 +187,50 @@ async function processDataNode(node, orderListJson, index) {
       : 0.0;
     const date = monthString.split("at")[0];
     const month = date.slice(-7, -4);
-    const receiptLink = orderInfo.children[1].children[0].childNodes[4];
-    if (index === 0) {
-      console.log("Link: ", receiptLink, index);
-      receiptLink.click();
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      var iframe = document.querySelector("iframe");
-      // console.log(iframe);
+    
+    if (index === 0 || (amount > 0.0 && monthMap[prevMonth] < monthMap[month])) {
+      
+      console.log("index: ", index,"monthMap[prevMonth] ",monthMap[prevMonth] ,"monthMap[month] ",monthMap[month])
+      currYear = await fetchYear(orderInfo, currYear);
 
+      console.log("Year Changed: ", currYear, restaurantName);
 
-      const iframeDocument =
-        iframe.contentDocument || iframe.contentWindow.document;
-
-     
-      const orderDate = iframeDocument.querySelector('.Uber18_text_p1[width="80%"]'); 
-      const orderYear = (orderDate.children[1].textContent.trim().split(",")[1]).trim()
-
-      console.log("orderDate: ", orderYear);
-      const closeBtn = document.querySelector('button[aria-label="Close"]');
-      // console.log(closeBtn)
-      closeBtn.click();
-      // iframe.remove();
     }
 
     updateOrderStats(restaurantName, amount, month, orderListJson);
+    return [month, currYear];
+
   } catch (error) {
     console.log(error);
   }
+ return;
 }
+
+
+async function fetchYear(orderInfo, currYear) {
+  const receiptLink = orderInfo.children[1].children[0].childNodes[4];
+      receiptLink.click();
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      var iframe = document.querySelector("iframe");
+      
+      if(iframe){
+
+        const iframeDocument =
+          iframe.contentDocument || iframe.contentWindow.document;
+  
+       
+        const orderDate = iframeDocument.querySelector('.Uber18_text_p1[width="80%"]'); 
+        var year = (orderDate.children[1].textContent.trim().split(",")[1]).trim()
+        const closeBtn = document.querySelector('button[aria-label="Close"]');
+        closeBtn.click();
+        return year
+      }
+      return (parseInt(currYear) - 1).toString() ;
+
+      
+}
+
+
 
 function updateOrderStats(restaurantName, amount, month, orderListJson) {
   if (!orderListJson[restaurantName]) {
