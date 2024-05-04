@@ -107,7 +107,7 @@ async function processDataNode(node, orderListJson, index, prevMonth, currYear) 
       console.log("index: ", index,"monthMap[prevMonth] ",monthMap[prevMonth] ,"monthMap[month] ",monthMap[month])
       currYear = await fetchYear(orderInfo, currYear);
 
-      console.log("Year Changed: ", currYear, restaurantName);
+      // console.log("Year Changed: ", currYear, restaurantName);
 
     }
 
@@ -163,7 +163,7 @@ function updateOrderStats(restaurantName, amount, month, orderListJson, currYear
   orderListJson.totalAmountSpent += amount;
   orderListJson.totalOrders += 1;
 
-  updateFavRest(restaurantName, orderListJson, currYear);
+  updateFavRest(restaurantName, orderListJson);
 }
 
 function updateMonthlyStats(restaurantName, amount, month, orderListJson, currYear) {
@@ -176,84 +176,84 @@ function updateMonthlyStats(restaurantName, amount, month, orderListJson, currYe
       Jan: {
         totalAmount: 0,
         totalOrders: 0,
-        favRest: "",
+        favRest: "No Data Available",
         mostOrders: 0,
         restaurantList: {},
       },
       Feb: {
         totalAmount: 0,
         totalOrders: 0,
-        favRest: "",
+        favRest: "No Data Available",
         mostOrders: 0,
         restaurantList: {},
       },
       Mar: {
         totalAmount: 0,
         totalOrders: 0,
-        favRest: "",
+        favRest: "No Data Available",
         mostOrders: 0,
         restaurantList: {},
       },
       Apr: {
         totalAmount: 0,
         totalOrders: 0,
-        favRest: "",
+        favRest: "No Data Available",
         mostOrders: 0,
         restaurantList: {},
       },
       May: {
         totalAmount: 0,
         totalOrders: 0,
-        favRest: "",
+        favRest: "No Data Available",
         mostOrders: 0,
         restaurantList: {},
       },
       Jun: {
         totalAmount: 0,
         totalOrders: 0,
-        favRest: "",
+        favRest: "No Data Available",
         mostOrders: 0,
         restaurantList: {},
       },
       Jul: {
         totalAmount: 0,
         totalOrders: 0,
-        favRest: "",
+        favRest: "No Data Available",
         mostOrders: 0,
         restaurantList: {},
       },
       Aug: {
         totalAmount: 0,
         totalOrders: 0,
-        favRest: "",
+        favRest: "No Data Available",
         mostOrders: 0,
         restaurantList: {},
       },
       Sep: {
         totalAmount: 0,
         totalOrders: 0,
-        favRest: "",
+        favRest: "No Data Available",
         mostOrders: 0,
         restaurantList: {},
       },
       Oct: {
         totalAmount: 0,
         totalOrders: 0,
-        favRest: "",
+        favRest: "No Data Available",
         mostOrders: 0,
         restaurantList: {},
       },
       Nov: {
         totalAmount: 0,
         totalOrders: 0,
-        favRest: "",
+        favRest: "No Data Available",
         mostOrders: 0,
         restaurantList: {},
       },
       Dec: {
         totalAmount: 0,
         totalOrders: 0,
-        favRest: "",
+        favRest: "No Data Available",
         mostOrders: 0,
         restaurantList: {},
       },

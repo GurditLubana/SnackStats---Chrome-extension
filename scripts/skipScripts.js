@@ -46,6 +46,7 @@ function waitForContent(mainElement, callback) {
 }
 
 function processOrderList(orderList) {
+
   const orderListJson = {
     totalAmountSpent: 0,
     totalOrders: 0,
@@ -61,93 +62,7 @@ function processOrderList(orderList) {
         3: { restaurant: "", orderCount: 0 },
       },
     },
-    months: {
-      mostExpensiveMonth: { month: "", amountSpent: 0 },
-      Jan: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Feb: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Mar: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Apr: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      May: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Jun: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Jul: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Aug: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Sep: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Oct: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Nov: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-      Dec: {
-        totalAmount: 0,
-        totalOrders: 0,
-        favRest: "",
-        mostOrders: 0,
-        restaurantList: {},
-      },
-    },
+    years:{},
   };
 
   orderList.childNodes.forEach((node) => {
@@ -156,8 +71,10 @@ function processOrderList(orderList) {
         const restaurantName = getRestaurantName(node);
         const amount = getAmount(node);
         const month = getMonth(node);
+        const year = getYear(node);
+        console.log(restaurantName, amount, month, year)
         if (restaurantName !== "No restaurant name found") {
-          updateOrderList(restaurantName, amount, month, orderListJson);
+          updateOrderList(restaurantName, amount, month, orderListJson, year);
         }
       } catch (error) {
         console.log(error);
@@ -182,6 +99,20 @@ function getMonth(node) {
 
   return monthName;
 }
+
+function getYear(node){
+  const fulldate = node.querySelectorAll(
+    ".styles__OrderDataText-sc-282i19-4"
+  )[1];
+  dateString = fulldate ? fulldate.textContent : null;
+  console.log(dateString)
+  let dateObj = new Date(dateString);
+let year = dateObj.getFullYear();
+
+  return year;
+}
+
+
 function getRestaurantName(node) {
   const restaurantNode = node.querySelector(
     ".styles__RestaurantTitle-sc-282i19-13"
@@ -201,7 +132,7 @@ function getAmount(node) {
   return 0.0;
 }
 
-function updateOrderList(restaurantName, amount, month, orderListJson) {
+function updateOrderList(restaurantName, amount, month, orderListJson, year) {
   if (!orderListJson[restaurantName]) {
     orderListJson[restaurantName] = { visits: 1, totalSpent: amount };
   } else {
@@ -209,7 +140,7 @@ function updateOrderList(restaurantName, amount, month, orderListJson) {
     orderListJson[restaurantName].totalSpent += amount;
   }
 
-  updateMonthlyStats(restaurantName, amount, month, orderListJson);
+  updateMonthlyStats(restaurantName, amount, month, orderListJson, year);
 
   orderListJson.totalAmountSpent += amount;
   orderListJson.totalOrders += 1;
@@ -217,33 +148,126 @@ function updateOrderList(restaurantName, amount, month, orderListJson) {
   updateFavRest(restaurantName, orderListJson);
 }
 
-function updateMonthlyStats(restaurantName, amount, month, orderListJson) {
-  orderListJson["months"][month]["totalAmount"] += amount;
+
+function updateMonthlyStats(restaurantName, amount, month, orderListJson, currYear) {
+
+  let year = orderListJson["years"]
+  if(!year[currYear]){
+
+    year[currYear] = {
+      mostExpensiveMonth: { month: "", amountSpent: 0 },
+      Jan: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "No Data Available",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Feb: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "No Data Available",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Mar: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "No Data Available",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Apr: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "No Data Available",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      May: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "No Data Available",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Jun: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "No Data Available",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Jul: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "No Data Available",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Aug: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "No Data Available",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Sep: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "No Data Available",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Oct: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "No Data Available",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Nov: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "No Data Available",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+      Dec: {
+        totalAmount: 0,
+        totalOrders: 0,
+        favRest: "No Data Available",
+        mostOrders: 0,
+        restaurantList: {},
+      },
+    }
+  }
+  year[currYear][month]["totalAmount"] += amount;
   if (
-    orderListJson["months"]["mostExpensiveMonth"]["amountSpent"] <
-    orderListJson["months"][month]["totalAmount"]
+    year[currYear]["mostExpensiveMonth"]["amountSpent"] <
+    year[currYear][month]["totalAmount"]
   ) {
-    orderListJson["months"]["mostExpensiveMonth"]["amountSpent"] =
-      orderListJson["months"][month]["totalAmount"];
-    orderListJson["months"]["mostExpensiveMonth"]["month"] =
+    year[currYear]["mostExpensiveMonth"]["amountSpent"] =
+      year[currYear][month]["totalAmount"];
+    year[currYear]["mostExpensiveMonth"]["month"] =
       getFullMonthName(month);
   }
 
-  orderListJson["months"][month]["totalOrders"] += 1;
+  year[currYear][month]["totalOrders"] += 1;
 
-  if (!orderListJson["months"][month]["restaurantList"][restaurantName]) {
-    orderListJson["months"][month]["restaurantList"][restaurantName] = 1;
+  if (!year[currYear][month]["restaurantList"][restaurantName]) {
+    year[currYear][month]["restaurantList"][restaurantName] = 1;
   } else {
-    orderListJson["months"][month]["restaurantList"][restaurantName] += 1;
+    year[currYear][month]["restaurantList"][restaurantName] += 1;
   }
 
   if (
-    orderListJson["months"][month]["mostOrders"] <
-    orderListJson["months"][month]["restaurantList"][restaurantName]
+    year[currYear][month]["mostOrders"] <
+    year[currYear][month]["restaurantList"][restaurantName]
   ) {
-    orderListJson["months"][month]["mostOrders"] =
-      orderListJson["months"][month]["restaurantList"][restaurantName];
-    orderListJson["months"][month]["favRest"] = restaurantName;
+    year[currYear][month]["mostOrders"] =
+      year[currYear][month]["restaurantList"][restaurantName];
+    year[currYear][month]["favRest"] = restaurantName;
   }
 }
 
@@ -362,7 +386,6 @@ function showLoadingPage() {
   creatureContainer.className = "creature-container";
 
   const creatureImage = document.createElement("img");
-  creatureImage.id = "creature";
   creatureImage.className = "creature";
   creatureImage.alt = "Creature Logo";
   creatureImage.style.height = "500px";
@@ -388,7 +411,7 @@ function removeLoadingScreen() {
 }
 
 function noOrdersInCartScreen() {
-  let creature = document.getElementById("creature");
+  let creature = document.getElementsByClassName("creature")[0];
   creature.src = chrome.runtime.getURL("Images/noOrderCreature.png");
 
   let loadingText = document.getElementsByClassName("loading-text")[0];
