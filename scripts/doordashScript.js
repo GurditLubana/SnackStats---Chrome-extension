@@ -59,11 +59,11 @@ async function expandOrdersList() {
   );
   if (mainElement) {
     while (document.body.querySelector(".iMIGfw")) {
-      console.log("Clicked on 'load more' button.");
+      // console.log("Clicked on 'load more' button.");
       document.body.querySelector(".iMIGfw").click();
       await new Promise((resolve) => setTimeout(resolve, 1500));
     }
-    console.log("Finished expanding the orders list.");
+    // console.log("Finished expanding the orders list.");
   }
 }
 
@@ -71,15 +71,14 @@ function fetchOrdersData(orderListJson) {
   let mainContent = document.body.querySelector(
     ".LayerManager__ChildrenContainer-sc-1k2ulq-0"
   );
-  console.log("main element found", mainContent);
+  // console.log("main element found", mainContent);
 
   let ordersListTab = document.querySelector(
     '.StackChildren__StyledStackChildren-sc-1tveqpz-0[data-testid="OrdersV2"]'
   );
 
   if (ordersListTab) {
-    // console.log("this is orders List", ordersListTab);
-    // console.log("length ", ordersListTab.children.length);
+    
     const ordersList = ordersListTab.children[2];
     
 
@@ -429,7 +428,7 @@ function showLoadingPage() {
 
   document.body.appendChild(loadingScreen);
 
-  console.log(loadingScreen);
+  
 }
 
 function removeLoadingScreen() {
