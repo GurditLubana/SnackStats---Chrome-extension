@@ -1,4 +1,5 @@
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (message, sender) {
+
   function openTabAndMonitor(url, scriptFile) {
     chrome.tabs.create({ url: url }, function (newTab) {
       function checkForLoginPage(tabId, changeInfo, tab) {
@@ -24,10 +25,33 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
           }
         }
       }
-
       chrome.tabs.onUpdated.addListener(checkForLoginPage);
     });
   }
+
+  function executeContentScript(tabId) {
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["scripts/fetchDoordashYear.js"]
+    }, () => {
+      // Listener to receive data from fetchDoordashYear.js
+      chrome.runtime.onMessage.addListener(function handler(response) {
+        if (response.action === "yearExtracted") {
+          // Send year data back to original tab
+          chrome.tabs.sendMessage(sender.tab.id, {
+            action: "yearReceived",
+            year: response.year
+          });
+
+          // Remove listener and close the background tab
+          chrome.runtime.onMessage.removeListener(handler);
+          chrome.tabs.remove(newTab.id);
+        }
+      });
+    });
+  }
+
+
   if (message.action === "uber") {
     console.log("Clicked on Uber");
     openTabAndMonitor(
@@ -83,6 +107,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         });
       }
     });
-  }
-  sendResponse({ acknowledged: "Button click acknowledged." });
+  } 
+    
 });
