@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "SnackStats",
-  "description": "Give stats about the amount of money you have spent on food delivery apps.",
-  "version": "1.0",
+  "name": "SnackStats – Track Your Food Delivery Spending",
+  "description": "It is your all-in-one Chrome extension to track and visualize spending patterns across Uber Eats, DoorDash, and SkipTheDishes.",
+  "version": "1.0.0",
   "permissions": [
     "activeTab",
     "scripting",
@@ -11,7 +11,7 @@
     
   ],
   "host_permissions": [
-    "*://*.ubereats.com/*", "*://*.skipthedishes.com/*", "*://*.doordash.com/*", "http://localhost:3000/"
+    "*://*.ubereats.com/*", "*://*.skipthedishes.com/*", "*://*.doordash.com/*", "*://snackstats-website.vercel.app/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -33,7 +33,7 @@
       "css": ["scripts/loadingScreen.css"]
     },
     {
-      "matches": ["http://localhost:3000/"],
+      "matches": ["*://snackstats-website.vercel.app/*"],
       "js": ["scripts/snackStatScript.js"]
     }
   ],

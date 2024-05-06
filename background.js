@@ -82,7 +82,7 @@ chrome.runtime.onMessage.addListener(function (message, sender) {
   } else if (message.action === "dataFetched") {
     const orderHistoryStat = message.orderHistoryStat;
     console.log(orderHistoryStat);
-    const statsDisplayScreen = "http://localhost:3000/";
+    const statsDisplayScreen = "https://snackstats-website.vercel.app/";
 
     chrome.tabs.query({ url: statsDisplayScreen }, function (tabs) {
       if (tabs.length > 0) {
