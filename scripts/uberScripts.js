@@ -44,7 +44,6 @@ async function calculateExpenditure() {
       for (const node of orderList.childNodes) {
         if (node.className === "al") {
           [prevMonth, currYear] = await processDataNode(node, orderListJson, orderNumber, prevMonth, currYear);
-          // console.log('last order \'s month was ', prevMonth)
           console.log(currYear)
           orderNumber += 1;
         }
@@ -102,13 +101,22 @@ async function processDataNode(node, orderListJson, index, prevMonth, currYear) 
     const date = monthString.split("at")[0];
     const month = date.slice(-7, -4);
     
-    if (index === 0 || (amount > 0.0 && monthMap[prevMonth] < monthMap[month])) {
-      
-      console.log("index: ", index,"monthMap[prevMonth] ",monthMap[prevMonth] ,"monthMap[month] ",monthMap[month])
-      currYear = await fetchYear(orderInfo, currYear);
+    // if (index === 0 || (amount > 0.0 && monthMap[prevMonth] < monthMap[month])) {
+      if (index === 0 ) {
+      try{
+        
+        currYear = await fetchYear(orderInfo, currYear);
+      }
+      catch(error){
+        console.log(error)
+        currYear = "" + new Date().getFullYear();
+        console.log(currYear);
 
-      // console.log("Year Changed: ", currYear, restaurantName);
+      }
 
+    }
+    else if(amount > 0.0 && monthMap[prevMonth] < monthMap[month]){
+      (parseInt(currYear) - 1).toString()
     }
 
     updateOrderStats(restaurantName, amount, month, orderListJson, currYear);
@@ -126,9 +134,10 @@ async function fetchYear(orderInfo, currYear) {
       receiptLink.click();
       await new Promise((resolve) => setTimeout(resolve, 1000));
       var iframe = document.querySelector("iframe");
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       
       if(iframe){
-
+        iframe.addEventListener("load", () => {
         const iframeDocument =
           iframe.contentDocument || iframe.contentWindow.document;
   
@@ -137,7 +146,7 @@ async function fetchYear(orderInfo, currYear) {
         var year = (orderDate.children[1].textContent.trim().split(",")[1]).trim()
         const closeBtn = document.querySelector('button[aria-label="Close"]');
         closeBtn.click();
-        return year
+        return year});
       }
       else{
 
