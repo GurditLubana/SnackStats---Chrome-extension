@@ -35,19 +35,25 @@ async function calculateExpenditure() {
             3: { restaurant: "", orderCount: 0 },
           },
         },
-        years:{},
+        years: {},
       };
 
       var orderNumber = 0;
       var prevMonth;
-      let currYear;
+      let currYear = new Date().getFullYear().toString();
       for (const node of orderList.childNodes) {
         if (node.className === "al") {
-          [prevMonth, currYear] = await processDataNode(node, orderListJson, orderNumber, prevMonth, currYear);
-          console.log(currYear)
+          [prevMonth, currYear] = await processDataNode(
+            node,
+            orderListJson,
+            orderNumber,
+            prevMonth,
+            currYear
+          );
+          // console.log("Year is: ", currYear);
           orderNumber += 1;
         }
-      };
+      }
 
       if (Object.keys(orderListJson).length > 4) {
         chrome.runtime.sendMessage({
@@ -71,8 +77,13 @@ async function expandOrderList(orderList) {
   console.log("Finished expanding all items.");
 }
 
-async function processDataNode(node, orderListJson, index, prevMonth, currYear) {
-
+async function processDataNode(
+  node,
+  orderListJson,
+  index,
+  prevMonth,
+  currYear
+) {
   const monthMap = {
     Jan: 1,
     Feb: 2,
@@ -85,7 +96,7 @@ async function processDataNode(node, orderListJson, index, prevMonth, currYear) 
     Sep: 9,
     Oct: 10,
     Nov: 11,
-    Dec: 12
+    Dec: 12,
   };
 
   try {
@@ -100,66 +111,80 @@ async function processDataNode(node, orderListJson, index, prevMonth, currYear) 
       : 0.0;
     const date = monthString.split("at")[0];
     const month = date.slice(-7, -4);
-    
-    // if (index === 0 || (amount > 0.0 && monthMap[prevMonth] < monthMap[month])) {
-      if (index === 0 ) {
-      try{
-        
-        currYear = await fetchYear(orderInfo, currYear);
-      }
-      catch(error){
-        console.log(error)
-        currYear = "" + new Date().getFullYear();
-        console.log(currYear);
 
+    if (index === 0) {
+      if (monthMap[currYear] < monthMap[month]) {
+        currYear = (parseInt(currYear) - 1).toString();
       }
-
-    }
-    else if(amount > 0.0 && monthMap[prevMonth] < monthMap[month]){
-      (parseInt(currYear) - 1).toString()
+    } else if (amount > 0.0 && monthMap[prevMonth] < monthMap[month]) {
+      currYear = (parseInt(currYear) - 1).toString();
     }
 
     updateOrderStats(restaurantName, amount, month, orderListJson, currYear);
     return [month, currYear];
-
   } catch (error) {
     console.log(error);
   }
- return;
+  return;
 }
 
+// async function fetchYear(orderInfo, currYear) {
+//   const receiptLink = orderInfo.children[1].children[0].childNodes[4];
+//   receiptLink.click();
 
-async function fetchYear(orderInfo, currYear) {
-  const receiptLink = orderInfo.children[1].children[0].childNodes[4];
-      receiptLink.click();
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      var iframe = document.querySelector("iframe");
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      if(iframe){
-        iframe.addEventListener("load", () => {
-        const iframeDocument =
-          iframe.contentDocument || iframe.contentWindow.document;
-  
-       
-        const orderDate = iframeDocument.querySelector('.Uber18_text_p1[width="80%"]'); 
-        var year = (orderDate.children[1].textContent.trim().split(",")[1]).trim()
-        const closeBtn = document.querySelector('button[aria-label="Close"]');
-        closeBtn.click();
-        return year});
-      }
-      else{
+//   await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        return (parseInt(currYear) - 1).toString() ;
-      }
+//   let iframe = document.querySelector("iframe");
 
-      
-}
+//   if (iframe) {
+//     try {
+//       await new Promise((resolve, reject) => {
+//         const iframeLoadHandler = () => {
+//           iframe.removeEventListener("load", iframeLoadHandler);
+//           resolve();
+//         };
 
+//         iframe.addEventListener("load", iframeLoadHandler);
 
+//         setTimeout(() => {
+//           iframe.removeEventListener("load", iframeLoadHandler);
+//           reject(new Error("Iframe load event did not trigger"));
+//         }, 5000);
+//       });
 
-function updateOrderStats(restaurantName, amount, month, orderListJson, currYear) {
-  
+//       const iframeDocument = iframe.contentDocument;
+//       const orderDate = iframeDocument.querySelector(
+//         '.Uber18_text_p1[width="80%"]'
+//       );
+
+//       const year = orderDate.children[1].textContent
+//         .trim()
+//         .split(",")[1]
+//         .trim();
+
+//       const closeBtn = document.querySelector('button[aria-label="Close"]');
+//       if (closeBtn) {
+//         closeBtn.click();
+//       }
+
+//       return year ? year : currYear;
+//     } catch (error) {
+//       console.error("Error processing the iframe:", error);
+//       return currYear;
+//     }
+//   } else {
+//     console.log("Else statement: ", (parseInt(currYear) - 1).toString());
+//     return (parseInt(currYear) - 1).toString();
+//   }
+// }
+
+function updateOrderStats(
+  restaurantName,
+  amount,
+  month,
+  orderListJson,
+  currYear
+) {
   if (!orderListJson[restaurantName]) {
     orderListJson[restaurantName] = { visits: 1, totalSpent: amount };
   } else {
@@ -175,11 +200,15 @@ function updateOrderStats(restaurantName, amount, month, orderListJson, currYear
   updateFavRest(restaurantName, orderListJson);
 }
 
-function updateMonthlyStats(restaurantName, amount, month, orderListJson, currYear) {
-
-  let year = orderListJson["years"]
-  if(!year[currYear]){
-
+function updateMonthlyStats(
+  restaurantName,
+  amount,
+  month,
+  orderListJson,
+  currYear
+) {
+  let year = orderListJson["years"];
+  if (!year[currYear]) {
     year[currYear] = {
       mostExpensiveMonth: { month: "", amountSpent: 0 },
       Jan: {
@@ -266,7 +295,7 @@ function updateMonthlyStats(restaurantName, amount, month, orderListJson, currYe
         mostOrders: 0,
         restaurantList: {},
       },
-    }
+    };
   }
   year[currYear][month]["totalAmount"] += amount;
   if (
@@ -275,8 +304,7 @@ function updateMonthlyStats(restaurantName, amount, month, orderListJson, currYe
   ) {
     year[currYear]["mostExpensiveMonth"]["amountSpent"] =
       year[currYear][month]["totalAmount"];
-    year[currYear]["mostExpensiveMonth"]["month"] =
-      getFullMonthName(month);
+    year[currYear]["mostExpensiveMonth"]["month"] = getFullMonthName(month);
   }
 
   year[currYear][month]["totalOrders"] += 1;
