@@ -3,8 +3,13 @@ if (document.readyState === "complete") {
 
   calculateExpenditure();
 } else {
-  window.addEventListener("load", () => {
-    console.log("UberEats not yet loaded completely.");
+  console.log("Waiting for the page to be fully loaded...");
+  document.addEventListener("readystatechange", () => {
+    if (document.readyState === "complete") {
+      console.log("Now ready to fetch the data.");
+
+      calculateExpenditure();
+    }
   });
 }
 
@@ -50,7 +55,6 @@ async function calculateExpenditure() {
             prevMonth,
             currYear
           );
-          // console.log("Year is: ", currYear);
           orderNumber += 1;
         }
       }
@@ -61,7 +65,7 @@ async function calculateExpenditure() {
           orderHistoryStat: orderListJson,
         });
       }
-      console.log(orderListJson);
+      // console.log(orderListJson);
       removeLoadingScreen();
     }
   }
@@ -127,56 +131,6 @@ async function processDataNode(
   }
   return;
 }
-
-// async function fetchYear(orderInfo, currYear) {
-//   const receiptLink = orderInfo.children[1].children[0].childNodes[4];
-//   receiptLink.click();
-
-//   await new Promise((resolve) => setTimeout(resolve, 1500));
-
-//   let iframe = document.querySelector("iframe");
-
-//   if (iframe) {
-//     try {
-//       await new Promise((resolve, reject) => {
-//         const iframeLoadHandler = () => {
-//           iframe.removeEventListener("load", iframeLoadHandler);
-//           resolve();
-//         };
-
-//         iframe.addEventListener("load", iframeLoadHandler);
-
-//         setTimeout(() => {
-//           iframe.removeEventListener("load", iframeLoadHandler);
-//           reject(new Error("Iframe load event did not trigger"));
-//         }, 5000);
-//       });
-
-//       const iframeDocument = iframe.contentDocument;
-//       const orderDate = iframeDocument.querySelector(
-//         '.Uber18_text_p1[width="80%"]'
-//       );
-
-//       const year = orderDate.children[1].textContent
-//         .trim()
-//         .split(",")[1]
-//         .trim();
-
-//       const closeBtn = document.querySelector('button[aria-label="Close"]');
-//       if (closeBtn) {
-//         closeBtn.click();
-//       }
-
-//       return year ? year : currYear;
-//     } catch (error) {
-//       console.error("Error processing the iframe:", error);
-//       return currYear;
-//     }
-//   } else {
-//     console.log("Else statement: ", (parseInt(currYear) - 1).toString());
-//     return (parseInt(currYear) - 1).toString();
-//   }
-// }
 
 function updateOrderStats(
   restaurantName,

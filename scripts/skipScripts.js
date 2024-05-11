@@ -7,8 +7,18 @@ if (document.readyState === "complete") {
     calculateExpenditure();
   }
 } else {
-  window.addEventListener("load", () => {
-    console.log("Skip not yet loaded completely.");
+ 
+  console.log("Waiting for the page to be fully loaded...");
+  document.addEventListener("readystatechange", () => {
+    if (document.readyState === "complete") {
+      console.log("Now ready to fetch the data.");
+      const currentUrl = window.location.href;
+      if (currentUrl === "https://www.skipthedishes.com/") {
+        askToLogin();
+      } else {
+        calculateExpenditure();
+      }
+    }
   });
 }
 async function calculateExpenditure() {
@@ -46,7 +56,6 @@ function waitForContent(mainElement, callback) {
 }
 
 function processOrderList(orderList) {
-
   const orderListJson = {
     totalAmountSpent: 0,
     totalOrders: 0,
@@ -62,7 +71,7 @@ function processOrderList(orderList) {
         3: { restaurant: "", orderCount: 0 },
       },
     },
-    years:{},
+    years: {},
   };
 
   orderList.childNodes.forEach((node) => {
@@ -72,7 +81,7 @@ function processOrderList(orderList) {
         const amount = getAmount(node);
         const month = getMonth(node);
         const year = getYear(node);
-        console.log(restaurantName, amount, month, year)
+        console.log(restaurantName, amount, month, year);
         if (restaurantName !== "No restaurant name found") {
           updateOrderList(restaurantName, amount, month, orderListJson, year);
         }
@@ -85,7 +94,7 @@ function processOrderList(orderList) {
     action: "dataFetched",
     orderHistoryStat: orderListJson,
   });
-  console.log(orderListJson);
+  // console.log(orderListJson);
   removeLoadingScreen();
 }
 
@@ -100,18 +109,17 @@ function getMonth(node) {
   return monthName;
 }
 
-function getYear(node){
+function getYear(node) {
   const fulldate = node.querySelectorAll(
     ".styles__OrderDataText-sc-282i19-4"
   )[1];
   dateString = fulldate ? fulldate.textContent : null;
-  console.log(dateString)
+  console.log(dateString);
   let dateObj = new Date(dateString);
-let year = dateObj.getFullYear();
+  let year = dateObj.getFullYear();
 
   return year;
 }
-
 
 function getRestaurantName(node) {
   const restaurantNode = node.querySelector(
@@ -148,12 +156,15 @@ function updateOrderList(restaurantName, amount, month, orderListJson, year) {
   updateFavRest(restaurantName, orderListJson);
 }
 
-
-function updateMonthlyStats(restaurantName, amount, month, orderListJson, currYear) {
-
-  let year = orderListJson["years"]
-  if(!year[currYear]){
-
+function updateMonthlyStats(
+  restaurantName,
+  amount,
+  month,
+  orderListJson,
+  currYear
+) {
+  let year = orderListJson["years"];
+  if (!year[currYear]) {
     year[currYear] = {
       mostExpensiveMonth: { month: "", amountSpent: 0 },
       Jan: {
@@ -240,7 +251,7 @@ function updateMonthlyStats(restaurantName, amount, month, orderListJson, currYe
         mostOrders: 0,
         restaurantList: {},
       },
-    }
+    };
   }
   year[currYear][month]["totalAmount"] += amount;
   if (
@@ -249,8 +260,7 @@ function updateMonthlyStats(restaurantName, amount, month, orderListJson, currYe
   ) {
     year[currYear]["mostExpensiveMonth"]["amountSpent"] =
       year[currYear][month]["totalAmount"];
-    year[currYear]["mostExpensiveMonth"]["month"] =
-      getFullMonthName(month);
+    year[currYear]["mostExpensiveMonth"]["month"] = getFullMonthName(month);
   }
 
   year[currYear][month]["totalOrders"] += 1;

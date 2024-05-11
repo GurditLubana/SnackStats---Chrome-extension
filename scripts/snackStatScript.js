@@ -4,7 +4,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
     if (document.readyState === "complete") {
       console.log("Ready to Show data.");
-      // console.log(reportData)
       provideLink(reportData);
     } else {
       window.addEventListener("load", () => {
