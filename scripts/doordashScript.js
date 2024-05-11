@@ -9,18 +9,8 @@ if (document.readyState === "complete") {
     calculateExpenditure();
   }
 } else {
-  console.log("Waiting for the page to be fully loaded...");
-  document.addEventListener("readystatechange", () => {
-    if (document.readyState === "complete") {
-      console.log("Now ready to fetch the data.");
-      const currentUrl = window.location.href;
-      if (currentUrl.includes("identity.doordash.com/auth?")) {
-        console.log("We are on the DoorDash authentication page.");
-        askToLogin();
-      } else {
-        calculateExpenditure();
-      }
-    }
+  window.addEventListener("load", () => {
+    console.log("Doordash not yet loaded completely.");
   });
 }
 
@@ -44,22 +34,20 @@ async function calculateExpenditure() {
           3: { restaurant: "", orderCount: 0 },
         },
       },
-      years: {},
+      years:{},
     };
 
-    const result = await fetchOrdersData(orderListJson);
-    setTimeout(() => {
-      if (result) {
-        chrome.runtime.sendMessage({
-          action: "dataFetched",
-          orderHistoryStat: orderListJson,
-        });
-
-        removeLoadingScreen();
-      } else {
-        noOrdersInCartScreen();
-      }
-    }, 1000);
+    const result = fetchOrdersData(orderListJson);
+    if (result) {
+      chrome.runtime.sendMessage({
+        action: "dataFetched",
+        orderHistoryStat: orderListJson,
+      });
+      console.log(orderListJson);
+      removeLoadingScreen();
+    } else {
+      noOrdersInCartScreen();
+    }
   } catch (error) {
     console.log("Error calculating expenditure:", error);
   }
@@ -79,10 +67,10 @@ async function expandOrdersList() {
   }
 }
 
-async function fetchOrdersData(orderListJson) {
-  // let mainContent = document.body.querySelector(
-  //   ".LayerManager__ChildrenContainer-sc-1k2ulq-0"
-  // );
+function fetchOrdersData(orderListJson) {
+  let mainContent = document.body.querySelector(
+    ".LayerManager__ChildrenContainer-sc-1k2ulq-0"
+  );
   // console.log("main element found", mainContent);
 
   let ordersListTab = document.querySelector(
@@ -90,7 +78,9 @@ async function fetchOrdersData(orderListJson) {
   );
 
   if (ordersListTab) {
+    
     const ordersList = ordersListTab.children[2];
+    
 
     ordersList.childNodes.forEach(async (node, index) => {
       if (node.nodeType === Node.ELEMENT_NODE) {
@@ -152,14 +142,9 @@ async function fetchOrdersData(orderListJson) {
           currentYear -= 1;
         }
 
+        
         if (restaurantName !== "No restaurant name found") {
-          updateOrderList(
-            restaurantName,
-            amount,
-            month,
-            orderListJson,
-            currentYear + 1
-          );
+          updateOrderList(restaurantName, amount, month, orderListJson, currentYear + 1);
         }
       }
     });
@@ -187,15 +172,12 @@ function updateOrderList(restaurantName, amount, month, orderListJson, year) {
   updateFavRest(restaurantName, orderListJson);
 }
 
-function updateMonthlyStats(
-  restaurantName,
-  amount,
-  month,
-  orderListJson,
-  currYear
-) {
-  let year = orderListJson["years"];
-  if (!year[currYear]) {
+
+function updateMonthlyStats(restaurantName, amount, month, orderListJson, currYear) {
+
+  let year = orderListJson["years"]
+  if(!year[currYear]){
+
     year[currYear] = {
       mostExpensiveMonth: { month: "", amountSpent: 0 },
       Jan: {
@@ -282,7 +264,7 @@ function updateMonthlyStats(
         mostOrders: 0,
         restaurantList: {},
       },
-    };
+    }
   }
   year[currYear][month]["totalAmount"] += amount;
   if (
@@ -291,7 +273,8 @@ function updateMonthlyStats(
   ) {
     year[currYear]["mostExpensiveMonth"]["amountSpent"] =
       year[currYear][month]["totalAmount"];
-    year[currYear]["mostExpensiveMonth"]["month"] = getFullMonthName(month);
+    year[currYear]["mostExpensiveMonth"]["month"] =
+      getFullMonthName(month);
   }
 
   year[currYear][month]["totalOrders"] += 1;
@@ -444,6 +427,8 @@ function showLoadingPage() {
   loadingScreen.appendChild(creatureContainer);
 
   document.body.appendChild(loadingScreen);
+
+  
 }
 
 function removeLoadingScreen() {
