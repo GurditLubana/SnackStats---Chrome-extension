@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "SnackStats – Track Your Food Delivery Spending",
   "description": "It is your all-in-one Chrome extension to track and visualize spending patterns across Uber Eats, DoorDash, and SkipTheDishes.",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "permissions": [
     "activeTab",
     "scripting",
